@@ -217,6 +217,55 @@ VOLUME "/opt/tomcat/webapps"
 
 EXPOSE 8080
 
+
+#Install Postgresql
+
+#Add group and user for postgres
+RUN groupadd -r postgres && useradd -r -g postgres postgres
+
+# Add the PostgreSQL PGP key to verify their Debian packages.
+# It should be the same key as https://www.postgresql.org/media/keys/ACCC4CF8.asc
+RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
+
+# Add PostgreSQL's repository. It contains the most recent stable release
+#     of PostgreSQL, ``9.3``.
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+
+# Install ``python-software-properties``, ``software-properties-common`` and PostgreSQL 9.3
+RUN apt-get update &&\
+DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties software-properties-common postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3
+
+# Add permissions for postgresql
+RUN chown -R postgres:postgres \
+    /etc/postgresql /var/log/postgresql /etc/ssl/private/ssl-cert-snakeoil.key \
+     /var/lib/postgresql /var/run/postgresql \
+&& chmod -R 700 \
+    /etc/postgresql /var/log/postgresql \
+    /var/lib/postgresql /var/run/postgresql \
+&& gpasswd -a postgres ssl-cert \
+&& chown postgres:ssl-cert /etc/ssl/private/ssl-cert-snakeoil.key \
+&& chown postgres:postgres /etc/ssl/private/ssl-cert-snakeoil.key \
+&& chmod  600 /etc/ssl/private/ssl-cert-snakeoil.key
+
+#For initial login with out root
+RUN sed -i -e 's/peer/trust/' /etc/postgresql/9.3/main/pg_hba.conf
+
+# Adjust PostgreSQL configuration so that remote connections to the
+# database are possible.
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.3/main/pg_hba.conf
+
+
+# And add ``listen_addresses`` to ``/etc/postgresql/9.3/main/postgresql.conf``
+RUN echo "listen_addresses='*'" >> /etc/postgresql/9.3/main/postgresql.conf
+
+# Expose the PostgreSQL port
+EXPOSE 5432
+
+# Add VOLUMEs to allow backup of config, logs and databases
+VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
+
+
+
 # Copying files
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 

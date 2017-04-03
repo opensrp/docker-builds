@@ -2,6 +2,16 @@
 set -eo pipefail
 shopt -s nullglob
 
+
+#Initialize postgresql
+/etc/init.d/postgresql start
+psql -U postgres  --command "ALTER USER postgres WITH ENCRYPTED PASSWORD '$POSTGRESQL_ROOT_PASSWORD';"
+if [ "$POSTGRESQL_MOTECH_DATABASE" ]; then
+		psql -U postgres  --command "CREATE DATABASE $POSTGRESQL_MOTECH_DATABASE;"
+        psql -U postgres   motechquartz < "~/sql/tables_quartz_postgres.sql"
+fi
+/etc/init.d/postgresql stop
+
 # Initialize MySQL
 MYSQL_COMMAND="mysqld"
 
@@ -96,6 +106,7 @@ if [ ! -d "$DATADIR/mysql" ]; then
 
 	if [ "$MYSQL_MOTECH_DATABASE" ]; then
 		echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_MOTECH_DATABASE\` ;" | "${mysql[@]}"
+		mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_MOTECH_DATABASE" < "~/sql/tables_quartz_mysql.sql"
 	fi
 
 	if [ "$MYSQL_OPENMRS_DATABASE" ]; then
@@ -131,7 +142,6 @@ if [ ! -d "$DATADIR/mysql" ]; then
 	fi
 
 	# Import data
-	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_MOTECH_DATABASE" < "~/sql/tables_quartz_mysql.sql"
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "~/sql/openmrs.sql"
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "~/sql/locations.sql"
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "~/sql/person_attribute_type.sql"
