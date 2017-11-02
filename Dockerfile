@@ -205,7 +205,7 @@ rm -rf /opt/tomcat/webapps/ROOT
 RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
 mv openmrs.war /opt/tomcat/webapps && \
 mkdir /root/.OpenMRS && \
-curl -O http://netcologne.dl.sourceforge.net/project/keymane/opensrp/opensrp_openmrs_modules.tar.gz && \
+curl -O https://cytranet.dl.sourceforge.net/project/keymane/opensrp/opensrp_openmrs_modules.tar.gz && \
 tar xzvf opensrp_openmrs_modules.tar.gz  -C /root/.OpenMRS
 
 ENV CATALINA_HOME /opt/tomcat
