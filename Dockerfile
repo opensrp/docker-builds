@@ -37,7 +37,7 @@ RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server-5.6 \
  && rm -rf /var/lib/apt/lists/* \
 	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
-	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld 
+	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld
 
 # comment out a few problematic configuration values
 # don't reverse lookup hostnames, they are usually another container
