@@ -1,4 +1,4 @@
-version: '3.2'
+version: '2'
 services:
   mysql:
     image: "mysql:5.6"
@@ -55,12 +55,8 @@ services:
         - postgres
       volumes:
         - postgres-tablespaces:/opt/postgresql/
-        - type: bind
-          source: ./migrations
-          target: /migrate
-        - type: bind
-          source: ./migrate.sh
-          target: /migrate.sh
+        - ./migrations:/migrate
+        - ./migrate.sh:/migrate.sh
       environment:
         DB_PORT_5432_TCP_ADDR: postgres
         DB_PORT_5432_TCP_PORT: 5432
