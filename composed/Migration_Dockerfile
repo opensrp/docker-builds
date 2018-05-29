@@ -1,0 +1,21 @@
+FROM java:openjdk-8u111-jre
+
+MAINTAINER OpenSRP
+
+RUN apt-get update
+RUN apt-get install -y netcat
+
+ADD https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip /opt/mybatis-migrations-3.3.4.zip
+
+# Unpack the distribution
+RUN unzip /opt/mybatis-migrations-3.3.4.zip -d /opt/
+RUN rm -f /opt/mybatis-migrations-3.3.4.zip
+RUN chmod +x /opt/mybatis-migrations-3.3.4/bin/migrate
+
+WORKDIR /migrate
+
+# Add command scripts
+ADD migrate.sh /opt/migrate.sh
+RUN chmod +x /opt/migrate.sh
+
+ENTRYPOINT ["/opt/migrate.sh"]
