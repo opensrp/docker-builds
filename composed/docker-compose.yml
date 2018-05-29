@@ -38,7 +38,7 @@ services:
       POSTGRES_PASSWORD: ${OPENSRP_POSTGRES_PASSWORD}
       POSTGRES_DB: ${OPENSRP_POSTGRES_DATABASE}
     volumes: 
-      - postgres-tablespaces:/opt/postgresql/
+      - postgres-tablespaces:${OPENSRP_TABLESPACE_ROOT}
   redis:
       image: redis:4.0.9
       command: 
@@ -54,7 +54,7 @@ services:
       depends_on:
         - postgres
       volumes:
-        - postgres-tablespaces:/opt/postgresql/
+        - postgres-tablespaces:${OPENSRP_TABLESPACE_ROOT}
         - ./migrations:/migrate
         - ./migrate.sh:/migrate.sh
       environment:
