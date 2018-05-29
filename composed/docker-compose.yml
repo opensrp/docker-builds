@@ -1,4 +1,4 @@
-version: '2'
+version: '3.2'
 services:
   mysql:
     image: "mysql:5.6"
@@ -28,6 +28,46 @@ services:
     image: "rmohr/activemq:5.11.1"
     ports:
       - "8161:8161"
+  postgres:
+    image: postgres:10.2
+    restart: always
+    ports:
+        - "5432:5432"
+    environment:
+      POSTGRES_USER: ${OPENSRP_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${OPENSRP_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${OPENSRP_POSTGRES_DATABASE}
+    volumes: 
+      - postgres-tablespaces:/opt/postgresql/
+  redis:
+      image: redis:4.0.9
+      command: 
+          --requirepass ${REDIS_PASSWORD}
+      ports:
+        - "6379:6379" 
+      volumes:
+        - redis-data:/data
+  migrations:
+      build:
+        context: .
+        dockerfile: ./Migration_Dockerfile
+      depends_on:
+        - postgres
+      volumes:
+        - postgres-tablespaces:/opt/postgresql/
+        - type: bind
+          source: ./migrations
+          target: /migrate
+        - type: bind
+          source: ./migrate.sh
+          target: /migrate.sh
+      environment:
+        DB_PORT_5432_TCP_ADDR: postgres
+        DB_PORT_5432_TCP_PORT: 5432
+        DB_ENV_POSTGRES_SCHEMA: ${OPENSRP_POSTGRES_DATABASE}
+        DB_ENV_POSTGRES_USER: ${OPENSRP_POSTGRES_USER}
+        DB_ENV_POSTGRES_PASSWORD: ${OPENSRP_POSTGRES_PASSWORD}
+        OPENSRP_TABLESPACE_ROOT: ${OPENSRP_TABLESPACE_ROOT}
   opensrp-composed:
     build:
       context: .
@@ -43,5 +83,11 @@ services:
       - couchdb
       - couchdb-lucene
       - activemq
+      - postgres
+      - migrations
+      - redis
     ports:
       - "9090:8080"
+volumes:
+  redis-data:
+  postgres-tablespaces:
