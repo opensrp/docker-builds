@@ -17,6 +17,9 @@ services:
       - "5984:5984"
     volumes:
       - ${EXTERNAL_DATA_DIR}/couchdb:/usr/local/var/lib/couchdb
+    environment:
+      COUCHDB_USER: ${COUCHDB_USER}
+      COUCHDB_PASSWORD: ${COUCHDB_PASSWORD}
   couchdb-lucene:
     image: "klaemo/couchdb-lucene"
     ports:
