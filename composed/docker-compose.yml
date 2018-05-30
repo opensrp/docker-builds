@@ -87,6 +87,8 @@ services:
       - redis
     ports:
       - "9090:8080"
+    volumes:
+       - ./webapps:/webapps
 volumes:
   redis-data:
   postgres-tablespaces:
