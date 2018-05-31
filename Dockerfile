@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:trusty
 
 MAINTAINER Ephraim Muhia (emuhia@ona.io)
 
@@ -44,13 +44,16 @@ RUN set -eux; \
   localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 ENV LANG en_US.utf8
 
+
+#RUN apt-get update; apt-get install -y software-properties-common; add-apt-repository 'deb http://archive.ubuntu.com/ubuntu xenial universe' ; apt-get update
+
 # install "nss_wrapper" in case we need to fake "/etc/passwd" and "/etc/group" (especially for OpenShift)
 # https://github.com/docker-library/postgres/issues/359
 # https://cwrap.org/nss_wrapper.html
-RUN set -eux; \
-  apt-get update; \
-  apt-get install -y --no-install-recommends libnss-wrapper; \
-  rm -rf /var/lib/apt/lists/*
+#RUN set -eux; \
+#  apt-get update; \
+#  apt-get install -y --no-install-recommends libnss-wrapper; \
+#  rm -rf /var/lib/apt/lists/*
 
 RUN set -ex; \
 # pub   4096R/ACCC4CF8 2011-10-13 [expires: 2019-07-02]
@@ -64,7 +67,7 @@ RUN set -ex; \
   apt-key list
 
 ENV PG_MAJOR 10
-ENV PG_VERSION 10.4-2.pgdg16.04+1
+ENV PG_VERSION 10.4-2.pgdg14.04+1
 
 RUN set -ex; \
   \
@@ -72,13 +75,13 @@ RUN set -ex; \
   case "$dpkgArch" in \
     amd64|i386|ppc64el) \
 # arches officialy built by upstream
-      echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main $PG_MAJOR" > /etc/apt/sources.list.d/pgdg.list; \
+      echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main $PG_MAJOR" > /etc/apt/sources.list.d/pgdg.list; \
       apt-get update; \
       ;; \
     *) \
 # we're on an architecture upstream doesn't officially build for
 # let's build binaries from their published source packages
-      echo "deb-src http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main $PG_MAJOR" > /etc/apt/sources.list.d/pgdg.list; \
+      echo "deb-src http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main $PG_MAJOR" > /etc/apt/sources.list.d/pgdg.list; \
       \
       tempDir="$(mktemp -d)"; \
       cd "$tempDir"; \
@@ -159,7 +162,7 @@ RUN apt-get update && apt-get install -y perl pwgen --no-install-recommends && r
 # gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys A4A9406876FCBD3C456770C88C718D3B5072E1F5
 
-RUN apt-get update; apt-get install -y software-properties-common; add-apt-repository 'deb http://archive.ubuntu.com/ubuntu trusty universe' ; apt-get update
+#RUN apt-get update; apt-get install -y software-properties-common; add-apt-repository 'deb http://archive.ubuntu.com/ubuntu trusty universe' ; apt-get update
 
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server-5.6 \
@@ -187,11 +190,11 @@ RUN mkdir -p /var/log/supervisor
 # Install Java.
 RUN \
   apt-get update && \
-  apt-get install -y openjdk-8-jdk && \
+  apt-get install -y openjdk-7-jdk && \
   rm -rf /var/lib/apt/lists/*
 
 # Define commonly used JAVA_HOME variable
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
 
 # Installing couchdb
 
@@ -203,7 +206,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     erlang-nox \
-    libicu55 \
+    libicu52 \
     libmozjs185-1.0 \
     libnspr4 \
     libnspr4-0d \
