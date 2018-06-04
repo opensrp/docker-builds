@@ -1,59 +1,10 @@
 #!/bin/bash
-# Initialize CouchDB
-echo `id`
-# we need to set the permissions here because docker mounts volumes as root
-exec chown -R couchdb:couchdb \
-	/usr/local/var/lib/couchdb \
-	/usr/local/var/log/couchdb \
-	/usr/local/var/run/couchdb \
-	/usr/local/etc/couchdb
 
-exec chmod -R 0770 \
-	/usr/local/var/lib/couchdb \
-	/usr/local/var/log/couchdb \
-	/usr/local/var/run/couchdb \
-	/usr/local/etc/couchdb
-
-exec chmod 664 /usr/local/etc/couchdb/*.ini
-exec chmod 775 /usr/local/etc/couchdb/*.d
-
-if [ "$COUCHDB_USER" ] && [ "$COUCHDB_PASSWORD" ]; then
-	# Create admin
-	printf "[admins]\n$COUCHDB_USER = $COUCHDB_PASSWORD\n" > /usr/local/etc/couchdb/local.d/docker.ini
-	chown couchdb:couchdb /usr/local/etc/couchdb/local.d/docker.ini
-fi
-
-# if we don't find an [admins] section followed by a non-comment, display a warning
-if ! grep -Pzoqr '\[admins\]\n[^;]\w+' /usr/local/etc/couchdb; then
-	# The - option suppresses leading tabs but *not* spaces. :)
-	cat >&2 <<-'EOWARN'
-		****************************************************
-		WARNING: CouchDB is running in Admin Party mode.
-		         This will allow anyone with access to the
-		         CouchDB port to access your database. In
-		         Docker's default configuration, this is
-		         effectively any other container on the same
-		         system.
-		         Use "-e COUCHDB_USER=admin -e COUCHDB_PASSWORD=password"
-		         to set it in "docker run".
-		****************************************************
-	EOWARN
-fi
-
-# Finished CouchDB Initialization
-
-# Initialize CouchDB Lucene
-
-chown -R couchdb:couchdb /opt/couchdb-lucene
-
-# Finished CouchDB Lucene Initialization
-id
 # Initialize MySQL
 set -eo pipefail
 shopt -s nullglob
 
 MYSQL_COMMAND="mysqld"
-id
 _check_config() {
 	toRun=( "$MYSQL_COMMAND" --verbose --help --log-bin-index="$(mktemp -u)" )
 	if ! errors="$("${toRun[@]}" 2>&1 >/dev/null)"; then
@@ -212,7 +163,6 @@ fi
 POSTGRES_COMMAND="postgres"
 
 set -Eeo pipefail
-id
 # TODO swap to -Eeuo pipefail above (after handling all potentially-unset variables)
 
 # usage: file_env VAR [DEFAULT]
@@ -369,7 +319,55 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
 	echo 'PostgreSQL init process complete; ready for start up.'
 	echo
 fi
-id
 #Finished Postgres Initialization
+
+# Initialize CouchDB
+
+# we need to set the permissions here because docker mounts volumes as root
+chown -R couchdb:couchdb \
+	/usr/local/var/lib/couchdb \
+	/usr/local/var/log/couchdb \
+	/usr/local/var/run/couchdb \
+	/usr/local/etc/couchdb
+
+chmod -R 0770 \
+	/usr/local/var/lib/couchdb \
+	/usr/local/var/log/couchdb \
+	/usr/local/var/run/couchdb \
+	/usr/local/etc/couchdb
+
+chmod 664 /usr/local/etc/couchdb/*.ini
+chmod 775 /usr/local/etc/couchdb/*.d
+
+if [ "$COUCHDB_USER" ] && [ "$COUCHDB_PASSWORD" ]; then
+	# Create admin
+	printf "[admins]\n$COUCHDB_USER = $COUCHDB_PASSWORD\n" > /usr/local/etc/couchdb/local.d/docker.ini
+	chown couchdb:couchdb /usr/local/etc/couchdb/local.d/docker.ini
+fi
+
+# if we don't find an [admins] section followed by a non-comment, display a warning
+if ! grep -Pzoqr '\[admins\]\n[^;]\w+' /usr/local/etc/couchdb; then
+	# The - option suppresses leading tabs but *not* spaces. :)
+	cat >&2 <<-'EOWARN'
+		****************************************************
+		WARNING: CouchDB is running in Admin Party mode.
+		         This will allow anyone with access to the
+		         CouchDB port to access your database. In
+		         Docker's default configuration, this is
+		         effectively any other container on the same
+		         system.
+		         Use "-e COUCHDB_USER=admin -e COUCHDB_PASSWORD=password"
+		         to set it in "docker run".
+		****************************************************
+	EOWARN
+fi
+
+# Finished CouchDB Initialization
+
+# Initialize CouchDB Lucene
+
+chown -R couchdb:couchdb /opt/couchdb-lucene
+
+# Finished CouchDB Lucene Initialization
 
 exec /usr/bin/supervisord
