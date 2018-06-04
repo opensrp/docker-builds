@@ -353,6 +353,6 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY composed/sql ~/sql
 
-COPY start.sh /usr/local/bin/
+COPY sh/*.sh /usr/local/bin/
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]
