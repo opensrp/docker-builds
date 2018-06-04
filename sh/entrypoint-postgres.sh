@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #Inialize Postgres
 
 POSTGRES_COMMAND="postgres"
