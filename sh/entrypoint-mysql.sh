@@ -131,10 +131,10 @@ if [ ! -d "$DATADIR/mysql" ]; then
 	fi
 
 	# Import data
-	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_MOTECH_DATABASE" < "~/sql/tables_quartz_mysql.sql"
-	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "~/sql/openmrs.sql"
-	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "~/sql/locations.sql"
-	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "~/sql/person_attribute_type.sql"
+	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_MOTECH_DATABASE" < "/opt/sql/tables_quartz_mysql.sql"
+	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/openmrs.sql"
+	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/locations.sql"
+	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/person_attribute_type.sql"
 
 	if ! kill -s TERM "$pid" || ! wait "$pid"; then
 		echo >&2 'MySQL init process failed.'

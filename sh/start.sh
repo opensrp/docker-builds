@@ -59,8 +59,11 @@ fi
 chown -R couchdb:couchdb /opt/couchdb-lucene
 
 # Finished CouchDB Lucene Initialization
-
-su -m mysql -c /usr/local/bin/entrypoint-mysql.sh
-su -m postgres -c /usr/local/bin/entrypoint-postgres.sh
+current_directory=$(pwd)
+echo $current_directory
+cd $(dirname $0)
+./entrypoint-mysql.sh
+./entrypoint-postgres.sh
+cd current_directory
 
 exec /usr/bin/supervisord
