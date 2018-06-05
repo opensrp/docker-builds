@@ -348,6 +348,14 @@ VOLUME "/opt/tomcat/webapps"
 
 EXPOSE 8080
 
+# Add mybatis migrations
+ADD https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip /opt/mybatis-migrations-3.3.4.zip
+
+# Unpack the distribution
+RUN unzip /opt/mybatis-migrations-3.3.4.zip -d /opt/
+RUN rm -f /opt/mybatis-migrations-3.3.4.zip
+RUN chmod +x /opt/mybatis-migrations-3.3.4/bin/migrate
+
 # Copying files
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 

@@ -15,7 +15,6 @@ RUN chmod +x /opt/mybatis-migrations-3.3.4/bin/migrate
 WORKDIR /migrate
 
 # Add command scripts
-ADD migrate.sh /opt/migrate.sh
-RUN chmod +x /opt/migrate.sh
+ADD sh/migrate.sh /opt/migrate.sh
 
 ENTRYPOINT ["/opt/migrate.sh"]
