@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Initialize MySQL
+echo "Initializing MySQL"
+
 set -eo pipefail
 shopt -s nullglob
 

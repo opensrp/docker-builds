@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #Inialize Postgres
+echo "Initializing Postgres"
 
 POSTGRES_COMMAND="postgres"
 

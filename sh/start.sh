@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # create openmrs properties file
+echo "creating openmrs properties file"
+
 touch /root/.OpenMRS/openmrs-runtime.properties
 cat > /root/.OpenMRS/openmrs-runtime.properties <<- EOF
 	connection.username=${MYSQL_OPENMRS_USER}
@@ -11,8 +13,11 @@ cat > /root/.OpenMRS/openmrs-runtime.properties <<- EOF
 	sync.mandatory=false
 EOF
 
-# Initialize CouchDB
+echo "openmrs properties file created"
 
+
+# Initialize CouchDB
+echo "Initializing CouchDB"
 # we need to set the permissions here because docker mounts volumes as root
 chown -R couchdb:couchdb \
 	/usr/local/var/lib/couchdb \
@@ -52,18 +57,19 @@ if ! grep -Pzoqr '\[admins\]\n[^;]\w+' /usr/local/etc/couchdb; then
 	EOWARN
 fi
 
+echo "Finished CouchDB Initialization"
 # Finished CouchDB Initialization
 
 # Initialize CouchDB Lucene
+echo "Initialize CouchDB Lucene"
 
 chown -R couchdb:couchdb /opt/couchdb-lucene
 
+echo "Finished CouchDB Lucene Initialization"
 # Finished CouchDB Lucene Initialization
-current_directory=$(pwd)
-echo $current_directory
+
 cd $(dirname $0)
 ./entrypoint-mysql.sh
 ./entrypoint-postgres.sh
-cd current_directory
 
 exec /usr/bin/supervisord
