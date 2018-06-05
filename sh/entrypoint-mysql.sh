@@ -132,11 +132,15 @@ if [ ! -d "$DATADIR/mysql" ]; then
 		EOSQL
 	fi
 
+	echo "Importing mysql data from backups"
+
 	# Import data
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_MOTECH_DATABASE" < "/opt/sql/tables_quartz_mysql.sql"
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/openmrs.sql"
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/locations.sql"
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/person_attribute_type.sql"
+
+	echo "Finished importing mysql data"
 
 	if ! kill -s TERM "$pid" || ! wait "$pid"; then
 		echo >&2 'MySQL init process failed.'

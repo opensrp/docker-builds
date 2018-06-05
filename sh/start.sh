@@ -1,7 +1,42 @@
 #!/bin/bash
 
-# create openmrs properties file
-echo "creating openmrs properties file"
+# Create migration properties file
+echo "Creating migration properties file"
+
+cat <<CONF > /migrate/environments/development.properties
+time_zone=GMT+0:00
+driver=org.postgresql.Driver
+url=jdbc:postgresql://localhost:5432/$POSTGRES_OPENSRP_DATABASE
+username=$POSTGRES_OPENSRP_USER
+password=$POSTGRES_OPENSRP_PASSWORD
+script_char_set=UTF-8
+send_full_script=true
+delimiter=;
+full_line_delimiter=false
+auto_commit=true
+changelog=changelog
+CONF
+
+echo "Migration properties file created"
+
+
+# Create opensrp table space root directory
+echo "Creating opensrp tablespace root directory"
+
+echo $OPENSRP_TABLESPACE_ROOT
+
+mkdir -p $OPENSRP_TABLESPACE_ROOT/core
+mkdir -p $OPENSRP_TABLESPACE_ROOT/error
+mkdir -p $OPENSRP_TABLESPACE_ROOT/schedule
+mkdir -p $OPENSRP_TABLESPACE_ROOT/feed
+mkdir -p $OPENSRP_TABLESPACE_ROOT/form
+
+chown -R postgres $OPENSRP_TABLESPACE_ROOT
+
+echo "OpenSRP tablespace root directory created"
+
+# Create openmrs properties file
+echo "Creating openmrs properties file"
 
 touch /root/.OpenMRS/openmrs-runtime.properties
 cat > /root/.OpenMRS/openmrs-runtime.properties <<- EOF

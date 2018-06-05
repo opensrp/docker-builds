@@ -85,9 +85,9 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
 
 	# check password first so we can output the warning before postgres
 	# messes it up
-	file_env 'POSTGRES_PASSWORD'
-	if [ "$POSTGRES_PASSWORD" ]; then
-		pass="PASSWORD '$POSTGRES_PASSWORD'"
+	file_env 'POSTGRES_MAIN_PASSWORD'
+	if [ "$POSTGRES_MAIN_PASSWORD" ]; then
+		pass="PASSWORD '$POSTGRES_MAIN_PASSWORD'"
 		authMethod=md5
 	else
 		# The - option suppresses leading tabs but *not* spaces. :)
@@ -99,7 +99,7 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
 			         Docker's default configuration, this is
 			         effectively any other container on the same
 			         system.
-			         Use "-e POSTGRES_PASSWORD=password" to set
+			         Use "-e POSTGRES_MAIN_PASSWORD=password" to set
 			         it in "docker run".
 			****************************************************
 		EOWARN
@@ -155,8 +155,29 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
 		echo
 	done
 
+	"${psql[@]}" --username postgres <<-EOSQL
+		CREATE DATABASE "$POSTGRES_OPENSRP_DATABASE";
+	EOSQL
+	echo
+
+	"${psql[@]}" --username postgres <<-EOSQL
+		CREATE USER "$POSTGRES_OPENSRP_USER" WITH ENCRYPTED PASSWORD '$POSTGRES_OPENSRP_PASSWORD';
+	EOSQL
+	echo
+
+	"${psql[@]}" --username postgres <<-EOSQL
+		GRANT ALL PRIVILEGES ON DATABASE "$POSTGRES_OPENSRP_DATABASE" TO "$POSTGRES_OPENSRP_USER";
+	EOSQL
+	echo
+
 	PGUSER="${PGUSER:-postgres}" \
 	pg_ctl -D "$PGDATA" -m fast -w stop
+
+	echo "Starting migrations"
+
+	/opt/mybatis-migrations-3.3.4/bin/migrate up
+	
+	echo "Migrations finished"
 
 	echo
 	echo 'PostgreSQL init process complete; ready for start up.'
