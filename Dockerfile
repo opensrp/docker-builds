@@ -351,7 +351,7 @@ EXPOSE 8080
 # Copying files
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-COPY composed/sql ~/sql
+COPY composed/sql /opt/sql
 
 COPY sh/*.sh /usr/local/bin/
 
