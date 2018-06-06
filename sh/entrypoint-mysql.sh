@@ -21,33 +21,26 @@ _check_config() {
 	fi
 }
 
-_datadir() {
-	"$MYSQL_COMMAND" --verbose --help --log-bin-index="$(mktemp -u)" 2>/dev/null | awk '$1 == "datadir" { print $2; exit }'
-}
-
 # allow the container to be started with `--user`
 if [ "$(id -u)" = '0' ]; then
 	_check_config "$MYSQL_COMMAND"
-	DATADIR="$(_datadir "$MYSQL_COMMAND")"
-	mkdir -p "$DATADIR"
-	chown -R mysql:mysql "$DATADIR"
+	mkdir -p "$MSDATA"
+	chown -R mysql:mysql "$MSDATA"
 	exec gosu mysql "$BASH_SOURCE" "$MYSQL_COMMAND"
 fi
 
 # still need to check config, container may have started with --user
 _check_config "$MYSQL_COMMAND"
-# Get config
-DATADIR="$(_datadir "$MYSQL_COMMAND")"
 
-if [ ! -d "$DATADIR/mysql" ]; then
+if [ ! -d "$MSDATA/mysql" ]; then
 	if [ -z "$MYSQL_ROOT_PASSWORD" -a -z "$MYSQL_ALLOW_EMPTY_PASSWORD" -a -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
 		echo >&2 'error: database is uninitialized and password option is not specified '
 		echo >&2 '  You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD'
 		exit 1
 	fi
 
-	mkdir -p "$DATADIR"
-    echo "DATADIR: $DATADIR"
+	mkdir -p "$MSDATA"
+    echo "DATADIR: $MSDATA"
 
 	echo 'Initializing database'
 	mysql_install_db --datadir="$DATADIR" --rpm --keep-my-cnf

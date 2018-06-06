@@ -180,6 +180,8 @@ RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf \
 
 RUN cp /etc/mysql/my.cnf /usr/share/mysql/my-default.cnf
 
+ENV MSDATA /var/lib/mysql
+
 VOLUME /var/lib/mysql
 
 EXPOSE 3306
