@@ -7,31 +7,15 @@ set -eo pipefail
 shopt -s nullglob
 
 MYSQL_COMMAND="mysqld"
-_check_config() {
-	toRun=( "$MYSQL_COMMAND" --verbose --help --log-bin-index="$(mktemp -u)" )
-	if ! errors="$("${toRun[@]}" 2>&1 >/dev/null)"; then
-		cat >&2 <<-EOM
-
-			ERROR: mysqld failed while attempting to check config
-			command was: "${toRun[*]}"
-
-			$errors
-		EOM
-		exit 1
-	fi
-}
 
 # allow the container to be started with `--user`
 if [ "$(id -u)" = '0' ]; then
-	_check_config "$MYSQL_COMMAND"
 	mkdir -p "$MSDATA"
 	chown -R mysql:mysql "$MSDATA"
 	exec gosu mysql "$BASH_SOURCE" "$MYSQL_COMMAND"
 fi
 
 # still need to check config, container may have started with --user
-_check_config "$MYSQL_COMMAND"
-
 if [ ! -d "$MSDATA/mysql" ]; then
 	if [ -z "$MYSQL_ROOT_PASSWORD" -a -z "$MYSQL_ALLOW_EMPTY_PASSWORD" -a -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
 		echo >&2 'error: database is uninitialized and password option is not specified '
@@ -43,7 +27,7 @@ if [ ! -d "$MSDATA/mysql" ]; then
     echo "DATADIR: $MSDATA"
 
 	echo 'Initializing database'
-	mysql_install_db --datadir="$DATADIR" --rpm --keep-my-cnf
+	mysql_install_db --datadir="$MSDATA" --rpm
 	echo 'Database initialized'
 
 	"$MYSQL_COMMAND" --skip-networking &
