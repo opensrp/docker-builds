@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM ubuntu:xenial
 
 MAINTAINER Ephraim Muhia (emuhia@ona.io)
 
@@ -11,11 +11,23 @@ RUN mkdir -p /var/log/supervisor
 # Install Java.
 RUN \
   apt-get update && \
-  apt-get install -y openjdk-7-jdk && \
-  rm -rf /var/lib/apt/lists/*
+  apt-get install -y openjdk-8-jdk && \
+  apt-get install -y ant && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/* && \
+  rm -rf /var/cache/oracle-jdk8-installer;
+
+# Fix certificate issues, found as of 
+# https://bugs.launchpad.net/ubuntu/+source/ca-certificates-java/+bug/983302
+RUN apt-get update && \
+  apt-get install -y ca-certificates-java && \
+  apt-get clean && \
+  update-ca-certificates -f && \
+  rm -rf /var/lib/apt/lists/* && \
+  rm -rf /var/cache/oracle-jdk8-installer;
 
 # Define commonly used JAVA_HOME variable
-ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 # Install tomcat
 ENV TOMCAT_VERSION 7.0.72

@@ -66,8 +66,7 @@ RUN set -ex; \
   rm -rf "$GNUPGHOME"; \
   apt-key list
 
-ENV PG_MAJOR 10
-ENV PG_VERSION 10.4-2.pgdg14.04+1
+ENV PG_VERSION 10
 
 RUN set -ex; \
   \
@@ -75,13 +74,13 @@ RUN set -ex; \
   case "$dpkgArch" in \
     amd64|i386|ppc64el) \
 # arches officialy built by upstream
-      echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main $PG_MAJOR" > /etc/apt/sources.list.d/pgdg.list; \
+      echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main $PG_VERSION" > /etc/apt/sources.list.d/pgdg.list; \
       apt-get update; \
       ;; \
     *) \
 # we're on an architecture upstream doesn't officially build for
 # let's build binaries from their published source packages
-      echo "deb-src http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main $PG_MAJOR" > /etc/apt/sources.list.d/pgdg.list; \
+      echo "deb-src http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main $PG_VERSION" > /etc/apt/sources.list.d/pgdg.list; \
       \
       tempDir="$(mktemp -d)"; \
       cd "$tempDir"; \
@@ -92,12 +91,12 @@ RUN set -ex; \
       apt-get update; \
       apt-get build-dep -y \
         postgresql-common pgdg-keyring \
-        "postgresql-$PG_MAJOR=$PG_VERSION" \
+        "postgresql-$PG_VERSION" \
       ; \
       DEB_BUILD_OPTIONS="nocheck parallel=$(nproc)" \
         apt-get source --compile \
           postgresql-common pgdg-keyring \
-          "postgresql-$PG_MAJOR=$PG_VERSION" \
+          "postgresql-$PG_VERSION" \
       ; \
 # we don't remove APT lists here because they get re-downloaded and removed later
       \
@@ -122,7 +121,7 @@ RUN set -ex; \
   apt-get install -y postgresql-common; \
   sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf; \
   apt-get install -y \
-    "postgresql-$PG_MAJOR=$PG_VERSION" \
+    "postgresql-$PG_VERSION" \
   ; \
   \
   rm -rf /var/lib/apt/lists/*; \
@@ -134,13 +133,13 @@ RUN set -ex; \
   fi
 
 # make the sample config easier to munge (and "correct by default")
-RUN mv -v "/usr/share/postgresql/$PG_MAJOR/postgresql.conf.sample" /usr/share/postgresql/ \
-  && ln -sv ../postgresql.conf.sample "/usr/share/postgresql/$PG_MAJOR/" \
+RUN mv -v "/usr/share/postgresql/$PG_VERSION/postgresql.conf.sample" /usr/share/postgresql/ \
+  && ln -sv ../postgresql.conf.sample "/usr/share/postgresql/$PG_VERSION/" \
   && sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" /usr/share/postgresql/postgresql.conf.sample
 
 RUN mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgresql && chmod 2777 /var/run/postgresql
 
-ENV PATH $PATH:/usr/lib/postgresql/$PG_MAJOR/bin
+ENV PATH $PATH:/usr/lib/postgresql/$PG_VERSION/bin
 ENV PGDATA /var/lib/postgresql/data
 RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA" # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
 VOLUME /var/lib/postgresql/data
@@ -163,6 +162,9 @@ RUN apt-get update && apt-get install -y perl pwgen --no-install-recommends && r
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys A4A9406876FCBD3C456770C88C718D3B5072E1F5
 
 #RUN apt-get update; apt-get install -y software-properties-common; add-apt-repository 'deb http://archive.ubuntu.com/ubuntu xenial universe' ; apt-get update
+RUN dpkg -l | grep mysql | awk '{print $2}' | xargs -n1 apt-get purge -y
+
+RUN apt-get update; apt-get install -y software-properties-common; add-apt-repository 'deb http://archive.ubuntu.com/ubuntu trusty universe'; apt-get update
 
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server-5.6 \
@@ -218,7 +220,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     erlang-nox \
-    libicu52 \
+    libicu55 \
     libmozjs185-1.0 \
     libnspr4 \
     libnspr4-0d \
