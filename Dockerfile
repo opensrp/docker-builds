@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM ubuntu:xenial
 
 MAINTAINER Ephraim Muhia (emuhia@ona.io)
 
@@ -75,13 +75,13 @@ RUN set -ex; \
   case "$dpkgArch" in \
     amd64|i386|ppc64el) \
 # arches officialy built by upstream
-      echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main $PG_MAJOR" > /etc/apt/sources.list.d/pgdg.list; \
+      echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main $PG_MAJOR" > /etc/apt/sources.list.d/pgdg.list; \
       apt-get update; \
       ;; \
     *) \
 # we're on an architecture upstream doesn't officially build for
 # let's build binaries from their published source packages
-      echo "deb-src http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main $PG_MAJOR" > /etc/apt/sources.list.d/pgdg.list; \
+      echo "deb-src http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main $PG_MAJOR" > /etc/apt/sources.list.d/pgdg.list; \
       \
       tempDir="$(mktemp -d)"; \
       cd "$tempDir"; \
@@ -162,7 +162,7 @@ RUN apt-get update && apt-get install -y perl pwgen --no-install-recommends && r
 # gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys A4A9406876FCBD3C456770C88C718D3B5072E1F5
 
-#RUN apt-get update; apt-get install -y software-properties-common; add-apt-repository 'deb http://archive.ubuntu.com/ubuntu trusty universe' ; apt-get update
+#RUN apt-get update; apt-get install -y software-properties-common; add-apt-repository 'deb http://archive.ubuntu.com/ubuntu xenial universe' ; apt-get update
 
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server-5.6 \
@@ -190,11 +190,23 @@ RUN mkdir -p /var/log/supervisor
 # Install Java.
 RUN \
   apt-get update && \
-  apt-get install -y openjdk-7-jdk && \
-  rm -rf /var/lib/apt/lists/*
+  apt-get install -y openjdk-8-jdk && \
+  apt-get install -y ant && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/* && \
+  rm -rf /var/cache/oracle-jdk8-installer;
+
+# Fix certificate issues, found as of 
+# https://bugs.launchpad.net/ubuntu/+source/ca-certificates-java/+bug/983302
+RUN apt-get update && \
+  apt-get install -y ca-certificates-java && \
+  apt-get clean && \
+  update-ca-certificates -f && \
+  rm -rf /var/lib/apt/lists/* && \
+  rm -rf /var/cache/oracle-jdk8-installer;
 
 # Define commonly used JAVA_HOME variable
-ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 # Installing couchdb
 

@@ -175,7 +175,7 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
 
 	echo "Starting migrations"
 
-	/opt/mybatis-migrations-3.3.4/bin/migrate up
+	/opt/mybatis-migrations-3.3.4/bin/migrate up --path=/opt/migrate
 	
 	echo "Migrations finished"
 
