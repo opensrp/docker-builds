@@ -23,15 +23,15 @@ echo "Migration properties file created"
 # Create opensrp table space root directory
 echo "Creating opensrp tablespace root directory"
 
-echo $OPENSRP_TABLESPACE_ROOT
+echo $POSTGRES_OPENSRP_TABLESPACE_DIR
 
-mkdir -p $OPENSRP_TABLESPACE_ROOT/core
-mkdir -p $OPENSRP_TABLESPACE_ROOT/error
-mkdir -p $OPENSRP_TABLESPACE_ROOT/schedule
-mkdir -p $OPENSRP_TABLESPACE_ROOT/feed
-mkdir -p $OPENSRP_TABLESPACE_ROOT/form
+mkdir -p $POSTGRES_OPENSRP_TABLESPACE_DIR/core
+mkdir -p $POSTGRES_OPENSRP_TABLESPACE_DIR/error
+mkdir -p $POSTGRES_OPENSRP_TABLESPACE_DIR/schedule
+mkdir -p $POSTGRES_OPENSRP_TABLESPACE_DIR/feed
+mkdir -p $POSTGRES_OPENSRP_TABLESPACE_DIR/form
 
-chown -R postgres $OPENSRP_TABLESPACE_ROOT
+chown -R postgres $POSTGRES_OPENSRP_TABLESPACE_DIR
 
 echo "OpenSRP tablespace root directory created"
 

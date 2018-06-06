@@ -59,7 +59,6 @@ services:
       volumes:
         - postgres-tablespaces:${OPENSRP_TABLESPACE_ROOT}
         - ./migrations:/migrate
-        - ./migrate.sh:/migrate.sh
       environment:
         DB_PORT_5432_TCP_ADDR: postgres
         DB_PORT_5432_TCP_PORT: 5432
