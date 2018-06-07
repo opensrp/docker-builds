@@ -144,8 +144,6 @@ ENV PGDATA /var/lib/postgresql/data
 RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA" # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
 VOLUME /var/lib/postgresql/data
 
-EXPOSE 5432
-
 # Install mysql
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
@@ -183,8 +181,6 @@ RUN cp /etc/mysql/my.cnf /usr/share/mysql/my-default.cnf
 ENV MSDATA /var/lib/mysql
 
 VOLUME /var/lib/mysql
-
-EXPOSE 3306
 
 # Installing supervisord
 RUN apt-get update && apt-get install -y supervisor
@@ -281,8 +277,6 @@ RUN buildDeps=' \
 # Define mountable directories.
 VOLUME ["/usr/local/var/lib/couchdb"]
 
-EXPOSE 5984
-
 # Installing CouchDB lucene
 ENV COUCHDB_LUCENE_VERSION 1.1.0
 
@@ -315,8 +309,6 @@ RUN sed -i -e '$a _fti = {couch_httpd_proxy, handle_proxy_req, <<"http:\/\/127.0
 
 VOLUME ["/opt/couchdb-lucene/indexes"]
 
-EXPOSE 5985
-
 #Installing activemQ
 ENV ACTIVEMQ_VERSION 5.11.1
 ENV ACTIVEMQ apache-activemq-$ACTIVEMQ_VERSION
@@ -336,7 +328,6 @@ RUN \
 
 VOLUME ["${ACTIVEMQ_CONF}", "${ACTIVEMQ_DATA}"]
 
-EXPOSE 61616 8161
 
 # Install tomcat
 ENV TOMCAT_VERSION 7.0.72
@@ -352,9 +343,9 @@ rm -rf /opt/tomcat/webapps/ROOT
 # Download openmrs war and modules
 RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
 mv openmrs.war /opt/tomcat/webapps && \
-mkdir /root/.OpenMRS && \
-curl -O http://netcologne.dl.sourceforge.net/project/keymane/opensrp/opensrp_openmrs_modules.tar.gz && \
-tar xzvf opensrp_openmrs_modules.tar.gz  -C /root/.OpenMRS
+mkdir /root/.OpenMRS 
+
+COPY composed/files/openmrs_modules/*.omod /root/.OpenMRS/modules/
 
 ENV CATALINA_HOME /opt/tomcat
 
