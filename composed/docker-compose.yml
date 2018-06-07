@@ -40,7 +40,6 @@ services:
       POSTGRES_USER: ${POSTGRES_OPENSRP_USER}
       POSTGRES_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
       POSTGRES_DB: ${POSTGRES_OPENSRP_DATABASE}
-      PGDATA: 
     volumes: 
       - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
       - opensrp_postgres:/var/lib/postgresql/data

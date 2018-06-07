@@ -3,9 +3,15 @@
 # Import data
 
 MYSQL_HOST=mysql
+MYSQL_PORT=3306
 
 echo "wait for mysql to be ready"
-/usr/local/bin/wait-for-it.sh ${MYSQL_HOST}:3306
+
+while ! nc -q 1 ${MYSQL_HOST} ${MYSQL_PORT} </dev/null;
+do
+  echo "Waiting for database"
+  sleep 10;
+done
 
 echo "Importing mysql data from backups"
 

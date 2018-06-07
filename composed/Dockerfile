@@ -29,6 +29,9 @@ RUN apt-get update && \
 # Define commonly used JAVA_HOME variable
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
+# Install netcat client
+RUN apt-get install -y netcat
+
 # Install tomcat
 ENV TOMCAT_VERSION 7.0.72
 
