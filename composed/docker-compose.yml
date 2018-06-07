@@ -49,7 +49,7 @@ services:
       ports:
         - "6379:6379" 
       volumes:
-        - redis-data:/data
+        - opensrp_composed_redis:/data
   migrations:
       build:
         context: .
@@ -57,7 +57,7 @@ services:
       depends_on:
         - postgres
       volumes:
-        - postgres-tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        - opensrp_composed_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
         - ./migrations:/migrate
       environment:
         DB_PORT_5432_TCP_ADDR: postgres
@@ -89,5 +89,8 @@ services:
     volumes:
        - ./webapps:/webapps
 volumes:
-  redis-data:
-  postgres-tablespaces:
+  opensrp_composed_mysql:
+  opensrp_composed_couchdb:
+  opensrp_composed_couchdb-lucene:
+  opensrp_composed_postgres_tablespaces:
+  opensrp_composed_redis:
