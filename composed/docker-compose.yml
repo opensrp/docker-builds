@@ -4,8 +4,6 @@ services:
     image: "mysql:5.6"
     volumes:
       - opensrp_mysql:/var/lib/mysql
-    ports:
-      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_OPENMRS_USER}
@@ -13,8 +11,6 @@ services:
       MYSQL_DATABASE: ${MYSQL_OPENMRS_DATABASE}
   couchdb:
     image: "klaemo/couchdb:1.6.1"
-    ports:
-      - "5984:5984"
     volumes:
       - opensrp_couchdb:/usr/local/var/lib/couchdb
     environment:
@@ -22,20 +18,14 @@ services:
       COUCHDB_PASSWORD: ${COUCHDB_PASSWORD}
   couchdb-lucene:
     image: "klaemo/couchdb-lucene"
-    ports:
-      - "5985:5985"
     volumes:
       - opensrp_couchdb-lucene:/opt/couchdb-lucene/indexes
     entrypoint: /bin/bash -c 'chown -R couchdb:couchdb /opt/couchdb-lucene; sleep 1; gosu couchdb /opt/couchdb-lucene/bin/run'
   activemq:
     image: "rmohr/activemq:5.11.1"
-    ports:
-      - "8161:8161"
   postgres:
     image: postgres:10.2
     restart: always
-    ports:
-        - "5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_OPENSRP_USER}
       POSTGRES_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
@@ -47,8 +37,6 @@ services:
       image: redis:4.0.9
       command: 
           --requirepass ${REDIS_PASSWORD}
-      ports:
-        - "6379:6379" 
       volumes:
         - opensrp_redis:/data
   migrations:
