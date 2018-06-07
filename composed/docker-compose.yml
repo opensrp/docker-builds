@@ -3,7 +3,7 @@ services:
   mysql:
     image: "mysql:5.6"
     volumes:
-      - ${EXTERNAL_DATA_DIR}/mysql:/var/lib/mysql
+      - opensrp_mysql:/var/lib/mysql
     ports:
       - "3306:3306"
     environment:
@@ -16,18 +16,57 @@ services:
     ports:
       - "5984:5984"
     volumes:
-      - ${EXTERNAL_DATA_DIR}/couchdb:/usr/local/var/lib/couchdb
+      - opensrp_couchdb:/usr/local/var/lib/couchdb
+    environment:
+      COUCHDB_USER: ${COUCHDB_USER}
+      COUCHDB_PASSWORD: ${COUCHDB_PASSWORD}
   couchdb-lucene:
     image: "klaemo/couchdb-lucene"
     ports:
       - "5985:5985"
     volumes:
-      - ${EXTERNAL_DATA_DIR}/couchdb-lucene:/opt/couchdb-lucene/indexes
+      - opensrp_couchdb-lucene:/opt/couchdb-lucene/indexes
     entrypoint: /bin/bash -c 'chown -R couchdb:couchdb /opt/couchdb-lucene; sleep 1; gosu couchdb /opt/couchdb-lucene/bin/run'
   activemq:
     image: "rmohr/activemq:5.11.1"
     ports:
       - "8161:8161"
+  postgres:
+    image: postgres:10.2
+    restart: always
+    ports:
+        - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_OPENSRP_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_OPENSRP_DATABASE}
+    volumes: 
+      - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
+      - opensrp_postgres:/var/lib/postgresql/data
+  redis:
+      image: redis:4.0.9
+      command: 
+          --requirepass ${REDIS_PASSWORD}
+      ports:
+        - "6379:6379" 
+      volumes:
+        - opensrp_redis:/data
+  migrations:
+      build:
+        context: .
+        dockerfile: ./Migration_Dockerfile
+      depends_on:
+        - postgres
+      volumes:
+        - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        - ./migrations:/migrate
+      environment:
+        DB_PORT_5432_TCP_ADDR: postgres
+        DB_PORT_5432_TCP_PORT: 5432
+        DB_ENV_POSTGRES_SCHEMA: ${POSTGRES_OPENSRP_DATABASE}
+        DB_ENV_POSTGRES_USER: ${POSTGRES_OPENSRP_USER}
+        DB_ENV_POSTGRES_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
+        POSTGRES_OPENSRP_TABLESPACE_DIR: ${POSTGRES_OPENSRP_TABLESPACE_DIR}
   opensrp-composed:
     build:
       context: .
@@ -43,5 +82,17 @@ services:
       - couchdb
       - couchdb-lucene
       - activemq
+      - postgres
+      - migrations
+      - redis
     ports:
       - "9090:8080"
+    volumes:
+       - ./webapps:/webapps
+volumes:
+  opensrp_mysql:
+  opensrp_couchdb:
+  opensrp_couchdb-lucene:
+  opensrp_postgres:
+  opensrp_postgres_tablespaces:
+  opensrp_redis:

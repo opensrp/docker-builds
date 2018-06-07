@@ -1,27 +1,155 @@
-FROM ubuntu:trusty
+FROM ubuntu:xenial
 
 MAINTAINER Ephraim Muhia (emuhia@ona.io)
+
+#Install Postgres
+
+RUN set -ex; \
+  if ! command -v gpg > /dev/null; then \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+      gnupg \
+      dirmngr \
+    ; \
+    rm -rf /var/lib/apt/lists/*; \
+  fi
+
+# explicitly set user/group IDs
+RUN groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
+
+# add gosu for easy step-down from root
+ENV GOSU_VERSION 1.7
+RUN set -x \
+  && apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
+  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
+  && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
+  && export GNUPGHOME="$(mktemp -d)" \
+  && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+  && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
+  && rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
+  && chmod +x /usr/local/bin/gosu \
+  && gosu nobody true \
+  && apt-get purge -y --auto-remove ca-certificates
+
+RUN mkdir /docker-entrypoint-initdb.d
+# make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
+RUN set -eux; \
+  if [ -f /etc/dpkg/dpkg.cfg.d/docker ]; then \
+# if this file exists, we're likely in "debian:xxx-slim", and locales are thus being excluded so we need to remove that exclusion (since we need locales)
+    grep -q '/usr/share/locale' /etc/dpkg/dpkg.cfg.d/docker; \
+    sed -ri '/\/usr\/share\/locale/d' /etc/dpkg/dpkg.cfg.d/docker; \
+    ! grep -q '/usr/share/locale' /etc/dpkg/dpkg.cfg.d/docker; \
+  fi; \
+  apt-get update; apt-get install -y locales; rm -rf /var/lib/apt/lists/*; \
+  localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+ENV LANG en_US.utf8
+
+
+#RUN apt-get update; apt-get install -y software-properties-common; add-apt-repository 'deb http://archive.ubuntu.com/ubuntu xenial universe' ; apt-get update
+
+# install "nss_wrapper" in case we need to fake "/etc/passwd" and "/etc/group" (especially for OpenShift)
+# https://github.com/docker-library/postgres/issues/359
+# https://cwrap.org/nss_wrapper.html
+#RUN set -eux; \
+#  apt-get update; \
+#  apt-get install -y --no-install-recommends libnss-wrapper; \
+#  rm -rf /var/lib/apt/lists/*
+
+RUN set -ex; \
+# pub   4096R/ACCC4CF8 2011-10-13 [expires: 2019-07-02]
+#       Key fingerprint = B97B 0AFC AA1A 47F0 44F2  44A0 7FCC 7D46 ACCC 4CF8
+# uid                  PostgreSQL Debian Repository
+  key='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8'; \
+  export GNUPGHOME="$(mktemp -d)"; \
+  gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
+  gpg --export "$key" > /etc/apt/trusted.gpg.d/postgres.gpg; \
+  rm -rf "$GNUPGHOME"; \
+  apt-key list
+
+ENV PG_VERSION 10
+
+RUN set -ex; \
+  \
+  dpkgArch="$(dpkg --print-architecture)"; \
+  case "$dpkgArch" in \
+    amd64|i386|ppc64el) \
+# arches officialy built by upstream
+      echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main $PG_VERSION" > /etc/apt/sources.list.d/pgdg.list; \
+      apt-get update; \
+      ;; \
+    *) \
+# we're on an architecture upstream doesn't officially build for
+# let's build binaries from their published source packages
+      echo "deb-src http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main $PG_VERSION" > /etc/apt/sources.list.d/pgdg.list; \
+      \
+      tempDir="$(mktemp -d)"; \
+      cd "$tempDir"; \
+      \
+      savedAptMark="$(apt-mark showmanual)"; \
+      \
+# build .deb files from upstream's source packages (which are verified by apt-get)
+      apt-get update; \
+      apt-get build-dep -y \
+        postgresql-common pgdg-keyring \
+        "postgresql-$PG_VERSION" \
+      ; \
+      DEB_BUILD_OPTIONS="nocheck parallel=$(nproc)" \
+        apt-get source --compile \
+          postgresql-common pgdg-keyring \
+          "postgresql-$PG_VERSION" \
+      ; \
+# we don't remove APT lists here because they get re-downloaded and removed later
+      \
+# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+# (which is done after we install the built packages so we don't have to redownload any overlapping dependencies)
+      apt-mark showmanual | xargs apt-mark auto > /dev/null; \
+      apt-mark manual $savedAptMark; \
+      \
+# create a temporary local APT repo to install from (so that dependency resolution can be handled by APT, as it should be)
+      ls -lAFh; \
+      dpkg-scanpackages . > Packages; \
+      grep '^Package: ' Packages; \
+      echo "deb [ trusted=yes ] file://$tempDir ./" > /etc/apt/sources.list.d/temp.list; \
+# work around the following APT issue by using "Acquire::GzipIndexes=false" (overriding "/etc/apt/apt.conf.d/docker-gzip-indexes")
+#   Could not open file /var/lib/apt/lists/partial/_tmp_tmp.ODWljpQfkE_._Packages - open (13: Permission denied)
+#   ...
+#   E: Failed to fetch store:/var/lib/apt/lists/partial/_tmp_tmp.ODWljpQfkE_._Packages  Could not open file /var/lib/apt/lists/partial/_tmp_tmp.ODWljpQfkE_._Packages - open (13: Permission denied)
+      apt-get -o Acquire::GzipIndexes=false update; \
+      ;; \
+  esac; \
+  \
+  apt-get install -y postgresql-common; \
+  sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf; \
+  apt-get install -y \
+    "postgresql-$PG_VERSION" \
+  ; \
+  \
+  rm -rf /var/lib/apt/lists/*; \
+  \
+  if [ -n "$tempDir" ]; then \
+# if we have leftovers from building, let's purge them (including extra, unnecessary build deps)
+    apt-get purge -y --auto-remove; \
+    rm -rf "$tempDir" /etc/apt/sources.list.d/temp.list; \
+  fi
+
+# make the sample config easier to munge (and "correct by default")
+RUN mv -v "/usr/share/postgresql/$PG_VERSION/postgresql.conf.sample" /usr/share/postgresql/ \
+  && ln -sv ../postgresql.conf.sample "/usr/share/postgresql/$PG_VERSION/" \
+  && sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" /usr/share/postgresql/postgresql.conf.sample
+
+RUN mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgresql && chmod 2777 /var/run/postgresql
+
+ENV PATH $PATH:/usr/lib/postgresql/$PG_VERSION/bin
+ENV PGDATA /var/lib/postgresql/data
+RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA" # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
+VOLUME /var/lib/postgresql/data
+
+EXPOSE 5432
 
 # Install mysql
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
-
-# add gosu for easy step-down from root
-ENV GOSU_VERSION 1.7
-RUN set -x \
-	&& apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
-	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
-	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
-	&& chmod +x /usr/local/bin/gosu \
-	&& gosu nobody true \
-	&& apt-get purge -y --auto-remove ca-certificates
-
-RUN mkdir /docker-entrypoint-initdb.d
 
 # FATAL ERROR: please install the following Perl modules before executing /usr/local/mysql/scripts/mysql_install_db:
 # File::Basename
@@ -32,6 +160,11 @@ RUN apt-get update && apt-get install -y perl pwgen --no-install-recommends && r
 
 # gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys A4A9406876FCBD3C456770C88C718D3B5072E1F5
+
+#RUN apt-get update; apt-get install -y software-properties-common; add-apt-repository 'deb http://archive.ubuntu.com/ubuntu xenial universe' ; apt-get update
+RUN dpkg -l | grep mysql | awk '{print $2}' | xargs -n1 apt-get purge -y
+
+RUN apt-get update; apt-get install -y software-properties-common; add-apt-repository 'deb http://archive.ubuntu.com/ubuntu trusty universe'; apt-get update
 
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server-5.6 \
@@ -47,6 +180,8 @@ RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf \
 
 RUN cp /etc/mysql/my.cnf /usr/share/mysql/my-default.cnf
 
+ENV MSDATA /var/lib/mysql
+
 VOLUME /var/lib/mysql
 
 EXPOSE 3306
@@ -59,11 +194,23 @@ RUN mkdir -p /var/log/supervisor
 # Install Java.
 RUN \
   apt-get update && \
-  apt-get install -y openjdk-7-jdk && \
-  rm -rf /var/lib/apt/lists/*
+  apt-get install -y openjdk-8-jdk && \
+  apt-get install -y ant && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/* && \
+  rm -rf /var/cache/oracle-jdk8-installer;
+
+# Fix certificate issues, found as of 
+# https://bugs.launchpad.net/ubuntu/+source/ca-certificates-java/+bug/983302
+RUN apt-get update && \
+  apt-get install -y ca-certificates-java && \
+  apt-get clean && \
+  update-ca-certificates -f && \
+  rm -rf /var/lib/apt/lists/* && \
+  rm -rf /var/cache/oracle-jdk8-installer;
 
 # Define commonly used JAVA_HOME variable
-ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 # Installing couchdb
 
@@ -75,7 +222,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     erlang-nox \
-    libicu52 \
+    libicu55 \
     libmozjs185-1.0 \
     libnspr4 \
     libnspr4-0d \
@@ -96,7 +243,7 @@ RUN set -xe \
     gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
   done
 
-ENV COUCHDB_VERSION 1.6.1
+ENV COUCHDB_VERSION 1.7.1
 
 # download dependencies, compile and install couchdb,
 # set correct permissions, expose couchdb to the outside and disable logging to disk
@@ -141,6 +288,7 @@ ENV COUCHDB_LUCENE_VERSION 1.1.0
 
 RUN apt-get update \
   && apt-get install -y maven \
+  && apt-get install -y unzip \
   && cd /usr/src \
   && curl -L https://github.com/rnewson/couchdb-lucene/archive/v$COUCHDB_LUCENE_VERSION.tar.gz | tar -xz \
   && cd couchdb-lucene-$COUCHDB_LUCENE_VERSION \
@@ -216,11 +364,67 @@ VOLUME "/opt/tomcat/webapps"
 
 EXPOSE 8080
 
+# Add mybatis migrations
+RUN wget --quiet --no-cookies https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip -O /opt/mybatis-migrations-3.3.4.zip
+
+# Unpack the distribution
+RUN unzip /opt/mybatis-migrations-3.3.4.zip -d /opt/
+RUN rm -f /opt/mybatis-migrations-3.3.4.zip
+RUN chmod +x /opt/mybatis-migrations-3.3.4/bin/migrate
+
+# Install Redis
+# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
+RUN groupadd -r redis && useradd -r -g redis redis
+
+ENV REDIS_VERSION 4.0.9
+ENV REDIS_DOWNLOAD_URL http://download.redis.io/releases/redis-4.0.9.tar.gz
+ENV REDIS_DOWNLOAD_SHA df4f73bc318e2f9ffb2d169a922dec57ec7c73dd07bccf875695dbeecd5ec510
+
+# for redis-sentinel see: http://redis.io/topics/sentinel
+RUN set -ex; \
+  \
+  buildDeps=' \
+    wget \
+    \
+    gcc \
+    libc6-dev \
+    make \
+  '; \
+  apt-get update; \
+  apt-get install -y $buildDeps --no-install-recommends; \
+  rm -rf /var/lib/apt/lists/*; \
+  \
+  wget -O redis.tar.gz "$REDIS_DOWNLOAD_URL"; \
+  echo "$REDIS_DOWNLOAD_SHA *redis.tar.gz" | sha256sum -c -; \
+  mkdir -p /usr/src/redis; \
+  tar -xzf redis.tar.gz -C /usr/src/redis --strip-components=1; \
+  rm redis.tar.gz; \
+  \
+# disable Redis protected mode [1] as it is unnecessary in context of Docker
+# (ports are not automatically exposed when running inside Docker, but rather explicitly by specifying -p / -P)
+# [1]: https://github.com/antirez/redis/commit/edd4d555df57dc84265fdfb4ef59a4678832f6da
+  grep -q '^#define CONFIG_DEFAULT_PROTECTED_MODE 1$' /usr/src/redis/src/server.h; \
+  sed -ri 's!^(#define CONFIG_DEFAULT_PROTECTED_MODE) 1$!\1 0!' /usr/src/redis/src/server.h; \
+  grep -q '^#define CONFIG_DEFAULT_PROTECTED_MODE 0$' /usr/src/redis/src/server.h; \
+# for future reference, we modify this directly in the source instead of just supplying a default configuration flag because apparently "if you specify any argument to redis-server, [it assumes] you are going to specify everything"
+# see also https://github.com/docker-library/redis/issues/4#issuecomment-50780840
+# (more exactly, this makes sure the default behavior of "save on SIGTERM" stays functional by default)
+  \
+  make -C /usr/src/redis -j "$(nproc)"; \
+  make -C /usr/src/redis install; \
+  \
+  rm -r /usr/src/redis; \
+  \
+  apt-get purge -y --auto-remove $buildDeps
+
+RUN mkdir /data && chown redis:redis /data
+VOLUME /data
+
 # Copying files
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-COPY composed/sql ~/sql
+COPY composed/sql /opt/sql
 
-COPY start.sh /usr/local/bin/
+COPY sh/*.sh /usr/local/bin/
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]

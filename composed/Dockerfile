@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM ubuntu:xenial
 
 MAINTAINER Ephraim Muhia (emuhia@ona.io)
 
@@ -11,11 +11,26 @@ RUN mkdir -p /var/log/supervisor
 # Install Java.
 RUN \
   apt-get update && \
-  apt-get install -y openjdk-7-jdk && \
-  rm -rf /var/lib/apt/lists/*
+  apt-get install -y openjdk-8-jdk && \
+  apt-get install -y ant && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/* && \
+  rm -rf /var/cache/oracle-jdk8-installer;
+
+# Fix certificate issues, found as of 
+# https://bugs.launchpad.net/ubuntu/+source/ca-certificates-java/+bug/983302
+RUN apt-get update && \
+  apt-get install -y ca-certificates-java && \
+  apt-get clean && \
+  update-ca-certificates -f && \
+  rm -rf /var/lib/apt/lists/* && \
+  rm -rf /var/cache/oracle-jdk8-installer;
 
 # Define commonly used JAVA_HOME variable
-ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+
+# Install netcat client
+RUN apt-get update && apt-get install -y netcat
 
 # Install tomcat
 ENV TOMCAT_VERSION 7.0.72
@@ -25,7 +40,7 @@ RUN apt-get update && \
 apt-get install -y  build-essential curl wget software-properties-common vim telnet unzip tar
 
 RUN apt-get update && \
-apt-get install -y mysql-client-5.6 && \
+apt-get install -y mysql-client && \
 rm -rf /var/lib/apt/lists/*
 
 # Get Tomcat
@@ -36,6 +51,9 @@ rm /tmp/tomcat.tgz && \
 rm -rf /opt/tomcat/webapps/examples && \
 rm -rf /opt/tomcat/webapps/docs && \
 rm -rf /opt/tomcat/webapps/ROOT
+
+#COPY opensrp war file to tomcat
+ADD webapps/opensrp.war /opt/tomcat/webapps/
 
 # Download openmrs war and modules
 RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
@@ -55,7 +73,7 @@ EXPOSE 8080
 # Copying files
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-COPY sql ~/sql
+COPY sql /opt/sql
 
 COPY sh/*.sh /usr/local/bin/
 
