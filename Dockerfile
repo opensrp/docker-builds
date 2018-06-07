@@ -170,7 +170,7 @@ RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server-5.6 \
  && rm -rf /var/lib/apt/lists/* \
 	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
-	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld 
+	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld
 
 # comment out a few problematic configuration values
 # don't reverse lookup hostnames, they are usually another container
@@ -353,7 +353,7 @@ rm -rf /opt/tomcat/webapps/ROOT
 RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
 mv openmrs.war /opt/tomcat/webapps && \
 mkdir /root/.OpenMRS && \
-curl -O http://netcologne.dl.sourceforge.net/project/keymane/opensrp/opensrp_openmrs_modules.tar.gz && \
+curl -O https://cytranet.dl.sourceforge.net/project/keymane/opensrp/opensrp_openmrs_modules.tar.gz && \
 tar xzvf opensrp_openmrs_modules.tar.gz  -C /root/.OpenMRS
 
 ENV CATALINA_HOME /opt/tomcat
