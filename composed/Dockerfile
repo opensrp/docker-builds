@@ -60,8 +60,7 @@ RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/Ope
 mv openmrs.war /opt/tomcat/webapps && \
 mkdir /root/.OpenMRS 
 
-COPY files/opensmrs_modules/*.omod /root/.OpenMRS
-
+COPY files/openmrs_modules/*.omod /root/.OpenMRS/modules/
 
 ENV CATALINA_HOME /opt/tomcat
 
