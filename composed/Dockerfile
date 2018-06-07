@@ -30,7 +30,7 @@ RUN apt-get update && \
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 # Install netcat client
-RUN apt-get install -y netcat
+RUN apt-get update && apt-get install -y netcat
 
 # Install tomcat
 ENV TOMCAT_VERSION 7.0.72
