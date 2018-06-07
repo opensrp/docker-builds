@@ -3,7 +3,7 @@ services:
   mysql:
     image: "mysql:5.6"
     volumes:
-      - opensrp_composed_mysql:/var/lib/mysql
+      - opensrp_mysql:/var/lib/mysql
     ports:
       - "3306:3306"
     environment:
@@ -16,7 +16,7 @@ services:
     ports:
       - "5984:5984"
     volumes:
-      - opensrp_composed_couchdb:/usr/local/var/lib/couchdb
+      - opensrp_couchdb:/usr/local/var/lib/couchdb
     environment:
       COUCHDB_USER: ${COUCHDB_USER}
       COUCHDB_PASSWORD: ${COUCHDB_PASSWORD}
@@ -25,7 +25,7 @@ services:
     ports:
       - "5985:5985"
     volumes:
-      - opensrp_composed_couchdb-lucene:/opt/couchdb-lucene/indexes
+      - opensrp_couchdb-lucene:/opt/couchdb-lucene/indexes
     entrypoint: /bin/bash -c 'chown -R couchdb:couchdb /opt/couchdb-lucene; sleep 1; gosu couchdb /opt/couchdb-lucene/bin/run'
   activemq:
     image: "rmohr/activemq:5.11.1"
@@ -41,7 +41,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
       POSTGRES_DB: ${POSTGRES_OPENSRP_DATABASE}
     volumes: 
-      - opensrp_composed_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
+      - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
   redis:
       image: redis:4.0.9
       command: 
@@ -49,7 +49,7 @@ services:
       ports:
         - "6379:6379" 
       volumes:
-        - opensrp_composed_redis:/data
+        - opensrp_redis:/data
   migrations:
       build:
         context: .
@@ -57,7 +57,7 @@ services:
       depends_on:
         - postgres
       volumes:
-        - opensrp_composed_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
         - ./migrations:/migrate
       environment:
         DB_PORT_5432_TCP_ADDR: postgres
@@ -89,8 +89,8 @@ services:
     volumes:
        - ./webapps:/webapps
 volumes:
-  opensrp_composed_mysql:
-  opensrp_composed_couchdb:
-  opensrp_composed_couchdb-lucene:
-  opensrp_composed_postgres_tablespaces:
-  opensrp_composed_redis:
+  opensrp_mysql:
+  opensrp_couchdb:
+  opensrp_couchdb-lucene:
+  opensrp_postgres_tablespaces:
+  opensrp_redis:
