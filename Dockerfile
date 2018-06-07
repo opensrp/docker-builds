@@ -364,8 +364,15 @@ VOLUME "/opt/tomcat/webapps"
 
 EXPOSE 8080
 
-# Install Redis
+# Add mybatis migrations
+RUN wget --quiet --no-cookies https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip -O /opt/mybatis-migrations-3.3.4.zip
 
+# Unpack the distribution
+RUN unzip /opt/mybatis-migrations-3.3.4.zip -d /opt/
+RUN rm -f /opt/mybatis-migrations-3.3.4.zip
+RUN chmod +x /opt/mybatis-migrations-3.3.4/bin/migrate
+
+# Install Redis
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r redis && useradd -r -g redis redis
 
@@ -412,14 +419,6 @@ RUN set -ex; \
 
 RUN mkdir /data && chown redis:redis /data
 VOLUME /data
-
-# Add mybatis migrations
-RUN wget --quiet --no-cookies https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip -O /opt/mybatis-migrations-3.3.4.zip
-
-# Unpack the distribution
-RUN unzip /opt/mybatis-migrations-3.3.4.zip -d /opt/
-RUN rm -f /opt/mybatis-migrations-3.3.4.zip
-RUN chmod +x /opt/mybatis-migrations-3.3.4/bin/migrate
 
 # Copying files
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
