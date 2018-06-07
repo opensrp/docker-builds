@@ -419,16 +419,19 @@ RUN mkdir /data && chown redis:redis /data
 VOLUME /data
 
 #Download opensrp server
+RUN apt-get update && apt-get install -y maven 
+
 ARG  opensrp_server_tag 
 ENV  OPENSRP_TAG $opensrp_server_tag
 RUN wget https://github.com/OpenSRP/opensrp-server/archive/${OPENSRP_TAG}.tar.gz -O /tmp/${OPENSRP_TAG}.tar.gz && \
 mkdir /migrate && tar -xf /tmp/${OPENSRP_TAG}.tar.gz && cp -R /tmp/opensrp-server-${OPENSRP_TAG}/assets/migrations /migrate 
 
 #Update properties file here
+RUN sed -i -e "/openmrs.url=/ s/=.*/=http:\/\/localhost:8080\/openmrs\//" -e "/openmrs.username=/ s/=.*/=$OPENMRS_USERNAME/" /tmp/opensrp-server-${OPENSRP_TAG}/assets/config/opensrp.properties 
 
 #Install Maven and compile opensrp warfile
-RUN apt-get update && apt-get install maven && \
-mvn clean install -Dmaven.test.skip=true -P postgres -f /tmp/opensrp-server-${OPENSRP_TAG}/pom.xml && \
+
+RUN mvn clean package -Dmaven.test.skip=true -P postgres -f /tmp/opensrp-server-${OPENSRP_TAG}/pom.xml && \
 cp /tmp/opensrp-server-${OPENSRP_TAG}/opensrp-web/target/opensrp.war /opt/tomcat/webapps/
 
 # Copying files
