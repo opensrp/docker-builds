@@ -40,7 +40,7 @@ RUN apt-get update && \
 apt-get install -y  build-essential curl wget software-properties-common vim telnet unzip tar
 
 RUN apt-get update && \
-apt-get install -y mysql-client-5.6 && \
+apt-get install -y mysql-client && \
 rm -rf /var/lib/apt/lists/*
 
 # Get Tomcat

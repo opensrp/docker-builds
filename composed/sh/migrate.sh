@@ -2,6 +2,16 @@
 : ${DB_ENV_POSTGRES_USER:=postgres}
 : ${DB_ENV_POSTGRES_SCHEMA:=postgres}
 
+echo "wait for postgres to be ready"
+
+while ! nc -q 1 $DB_PORT_5432_TCP_ADDR $DB_PORT_5432_TCP_PORT </dev/null;
+do
+  echo "Waiting for database"
+  sleep 10;
+done
+
+echo "wait for postgres to be ready"
+
 cat <<CONF > /migrate/environments/development.properties
 time_zone=GMT+0:00
 driver=org.postgresql.Driver
@@ -26,12 +36,6 @@ mkdir -p $POSTGRES_OPENSRP_TABLESPACE_DIR/form
 
 groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
 
-chown -R postgres $POSTGRES_OPENSRP_TABLESPACE_DIR
-
-while ! nc -q 1 $DB_PORT_5432_TCP_ADDR $DB_PORT_5432_TCP_PORT </dev/null;
-do
-  echo "Waiting for database"
-  sleep 10;
-done
+chown -R postgres:postgres $POSTGRES_OPENSRP_TABLESPACE_DIR
 
 /opt/mybatis-migrations-3.3.4/bin/migrate up
