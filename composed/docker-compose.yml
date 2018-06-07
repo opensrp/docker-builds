@@ -25,7 +25,7 @@ services:
     ports:
       - "5985:5985"
     volumes:
-      - opensrp_couchdb-lucene:/opt/couchdb-lucene/indexes
+      - opensrp_couchdb_lucene:/opt/couchdb-lucene/indexes
     entrypoint: /bin/bash -c 'chown -R couchdb:couchdb /opt/couchdb-lucene; sleep 1; gosu couchdb /opt/couchdb-lucene/bin/run'
   activemq:
     image: "rmohr/activemq:5.11.1"
@@ -92,7 +92,7 @@ services:
 volumes:
   opensrp_mysql:
   opensrp_couchdb:
-  opensrp_couchdb-lucene:
+  opensrp_couchdb_lucene:
   opensrp_postgres:
   opensrp_postgres_tablespaces:
   opensrp_redis:
