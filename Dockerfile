@@ -364,6 +364,20 @@ VOLUME "/opt/tomcat/webapps"
 
 EXPOSE 8080
 
+#Download opensrp server
+RUN wget https://github.com/OpenSRP/opensrp-server/archive/${OPENSRP_TAG}.zip -O /tmp && \
+unzip /tmp/${OPENSRP_TAG}.zip
+
+WORKDIR /tmp/opensrp-server-${OPENSRP_TAG}
+
+ADD assets/migrations /migrate 
+#Update properties file here
+
+#Install Maven and compile opensrp warfile
+RUN apt-get update && apt-get install maven && mvn clean install -Dmaven.test.skip=true -P postgres
+
+ADD opensrp-web/target/opensrp.war /opt/tomcat/webapps/
+
 # Add mybatis migrations
 RUN wget --quiet --no-cookies https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip -O /opt/mybatis-migrations-3.3.4.zip
 
