@@ -384,8 +384,6 @@ ENV REDIS_DOWNLOAD_SHA df4f73bc318e2f9ffb2d169a922dec57ec7c73dd07bccf875695dbeec
 RUN set -ex; \
   \
   buildDeps=' \
-    wget \
-    \
     gcc \
     libc6-dev \
     make \
@@ -430,7 +428,7 @@ mkdir /migrate && tar -xf /tmp/${OPENSRP_TAG}.tar.gz && cp -R /tmp/opensrp-serve
 
 #Install Maven and compile opensrp warfile
 RUN apt-get update && apt-get install maven && \
-mvn clean install -Dmaven.test.skip=true -P postgres -f /tmp/opensrp-server-${OPENSRP_TAG}/pom.xml &&
+mvn clean install -Dmaven.test.skip=true -P postgres -f /tmp/opensrp-server-${OPENSRP_TAG}/pom.xml && \
 cp /tmp/opensrp-server-${OPENSRP_TAG}/opensrp-web/target/opensrp.war /opt/tomcat/webapps/
 
 # Copying files
