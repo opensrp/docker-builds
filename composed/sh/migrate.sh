@@ -16,17 +16,17 @@ auto_commit=true
 changelog=changelog
 CONF
 
-echo $OPENSRP_TABLESPACE_ROOT
+echo $POSTGRES_OPENSRP_TABLESPACE_DIR
 
-mkdir -p $OPENSRP_TABLESPACE_ROOT/core
-mkdir -p $OPENSRP_TABLESPACE_ROOT/error
-mkdir -p $OPENSRP_TABLESPACE_ROOT/schedule
-mkdir -p $OPENSRP_TABLESPACE_ROOT/feed
-mkdir -p $OPENSRP_TABLESPACE_ROOT/form
+mkdir -p $POSTGRES_OPENSRP_TABLESPACE_DIR/core
+mkdir -p $POSTGRES_OPENSRP_TABLESPACE_DIR/error
+mkdir -p $POSTGRES_OPENSRP_TABLESPACE_DIR/schedule
+mkdir -p $POSTGRES_OPENSRP_TABLESPACE_DIR/feed
+mkdir -p $POSTGRES_OPENSRP_TABLESPACE_DIR/form
 
 groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
 
-chown -R postgres $OPENSRP_TABLESPACE_ROOT
+chown -R postgres $POSTGRES_OPENSRP_TABLESPACE_DIR
 
 while ! nc -q 1 $DB_PORT_5432_TCP_ADDR $DB_PORT_5432_TCP_PORT </dev/null;
 do

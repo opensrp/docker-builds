@@ -365,7 +365,7 @@ VOLUME "/opt/tomcat/webapps"
 EXPOSE 8080
 
 # Add mybatis migrations
-ADD https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip /opt/mybatis-migrations-3.3.4.zip
+RUN wget --quiet --no-cookies https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip -O /opt/mybatis-migrations-3.3.4.zip
 
 # Unpack the distribution
 RUN unzip /opt/mybatis-migrations-3.3.4.zip -d /opt/
