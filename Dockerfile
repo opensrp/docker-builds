@@ -418,7 +418,7 @@ RUN apt-get update && apt-get install -y maven
 ARG opensrp_server_tag
 
 #openmrs settings
-ARG openmrs_url=http://localhost:8080/openmrs/
+ARG openmrs_url=http:\/\/localhost:8080\/openmrs\/
 ARG openmrs_username=admin
 ARG openmrs_password=Admin123
 
@@ -448,9 +448,9 @@ ARG mysql_openmrs_database=openmrs
 ARG mysql_motech_database=motechquartz
 ARG mysql_reporting_database=report
 ARG mysql_anm_database=anm_report
-ARG mysql_opensrp_jdbc=jdbc:mysql://${mysql_host}:${mysql_port}/${mysql_opensrp_database}?createDatabaseIfNotExist=true
-ARG mysql_opensrp_jdbc_wo=jdbc:mysql://${mysql_host}:${mysql_port}
-ARG mysql_motech_jdbc=jdbc:mysql://${mysql_host}:${mysql_port}/${mysql_motech_database}
+ARG mysql_opensrp_jdbc=jdbc:mysql:\/\/${mysql_host}:${mysql_port}\/${mysql_opensrp_database}?createDatabaseIfNotExist=true
+ARG mysql_opensrp_jdbc_wo=jdbc:mysql:\/\/${mysql_host}:${mysql_port}
+ARG mysql_motech_jdbc=jdbc:mysql:\/\/${mysql_host}:${mysql_port}\/${mysql_motech_database}
 ENV MYSQL_OPENSRP_USER $mysql_opensrp_password
 ENV MYSQL_OPENSRP_PASSWORD $mysql_opensrp_user
 ENV MYSQL_OPENSRP_DATABASE $mysql_opensrp_database
@@ -473,34 +473,34 @@ ARG postgres_port=5432
 ARG postgres_opensrp_user=opensrp_admin
 ARG postgres_opensrp_password=admin
 ARG postgres_opensrp_database=opensrp
-ARG postgres_opensrp_jdbc=jdbc:postgresql://${postgres_host}:${postgres_port}/${postgres_opensrp_database}
+ARG postgres_opensrp_jdbc=jdbc:postgresql:\/\/${postgres_host}:${postgres_port}\/${postgres_opensrp_database}
 ENV POSTGRES_OPENSRP_DATABASE $postgres_opensrp_database
 ENV POSTGRES_OPENSRP_USER $postgres_opensrp_user
 ENV POSTGRES_OPENSRP_PASSWORD $postgres_opensrp_password
 
 #Download opensrp_server
-RUN wget -quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/${opensrp_server_tag}.tar.gz -O /tmp/${opensrp_server_tag}.tar.gz && \
+RUN wget --quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/${opensrp_server_tag}.tar.gz -O /tmp/${opensrp_server_tag}.tar.gz && \
 mkdir /migrate && tar -xf /tmp/${opensrp_server_tag}.tar.gz -C /tmp && cp -R /tmp/opensrp-server-${opensrp_server_tag}/assets/migrations /migrate 
 
 #Update property files 
-RUN sed -i -e "/openmrs.url=/ s/=.*/=${openmrs_url}/" -e "/openmrs.username=/ s/=.*/=${openmrs_username}/" -e "/openmrs.password=/ s/=.*/=${openmrs_password}/" /tmp/opensrp-server-${OPENSRP_TAG}/assets/config/opensrp.properties 
+RUN sed -i -e "/openmrs.url=/ s/=.*/=${openmrs_url}/" -e "/openmrs.username=/ s/=.*/=${openmrs_username}/" -e "/openmrs.password=/ s/=.*/=${openmrs_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
-RUN sed -i -e "/couchdb.server=/ s/=.*/=${couchdb_host}/" -e "/couchdb.port=/ s/=.*/=${couchdb_port}/" -e "/couchdb.username=/ s/=.*/=${couchdb_username}/" -e "/couchdb.password=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${OPENSRP_TAG}/assets/config/opensrp.properties 
+RUN sed -i -e "/couchdb.server=/ s/=.*/=${couchdb_host}/" -e "/couchdb.port=/ s/=.*/=${couchdb_port}/" -e "/couchdb.username=/ s/=.*/=${couchdb_username}/" -e "/couchdb.password=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
-RUN sed -i -e "/jdbc.username=/ s/=.*/=${mysql_opensrp_user}/" -e "/jdbc.password=/ s/=.*/=${mysql_opensrp_password}/" -e "/jdbc.url=/ s/=.*/=${mysql_opensrp_jdbc}/" -e "/jdbc.url-wo-db=/ s/=.*/=${mysql_opensrp_jdbc_wo}/" /tmp/opensrp-server-${OPENSRP_TAG}/assets/config/opensrp.properties 
+RUN sed -i -e "/jdbc.username=/ s/=.*/=${mysql_opensrp_user}/" -e "/jdbc.password=/ s/=.*/=${mysql_opensrp_password}/" -e "/jdbc.url=/ s/=.*/=${mysql_opensrp_jdbc}/" -e "/jdbc.url-wo-db=/ s/=.*/=${mysql_opensrp_jdbc_wo}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
-RUN sed -i -e "/redis.host=/ s/=.*/=${redis_host}/" -e "/redis.port=/ s/=.*/=${redis_port}/" -e "/redis.password=/ s/=.*/=${redis_password}/" /tmp/opensrp-server-${OPENSRP_TAG}/assets/config/opensrp.properties 
+RUN sed -i -e "/redis.host=/ s/=.*/=${redis_host}/" -e "/redis.port=/ s/=.*/=${redis_port}/" -e "/redis.password=/ s/=.*/=${redis_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
-RUN sed -i -e "/host=/ s/=.*/=${couchdb_host}/" -e "/port=/ s/=.*/=${couchdb_port}/" -e "/username=/ s/=.*/=${couchdb_username}/" -e "/password=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${OPENSRP_TAG}/assets/config/couchdb.properties 
+RUN sed -i -e "/host=/ s/=.*/=${couchdb_host}/" -e "/port=/ s/=.*/=${couchdb_port}/" -e "/username=/ s/=.*/=${couchdb_username}/" -e "/password=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/couchdb.properties 
 
-RUN sed -i -e "/org.quartz.dataSource.motechDS.URL=/ s/=.*/=${mysql_motech_jdbc}/" -e "/org.quartz.dataSource.motechDS.user=/ s/=.*/=${mysql_opensrp_user}/" -e "/org.quartz.dataSource.motechDS.password=/ s/=.*/=${mysql_opensrp_password}/" /tmp/opensrp-server-${OPENSRP_TAG}/opensrp-web/src/main/resources/quartz.properties 
+RUN sed -i -e "/org.quartz.dataSource.motechDS.URL=/ s/=.*/=${mysql_motech_jdbc}/" -e "/org.quartz.dataSource.motechDS.user=/ s/=.*/=${mysql_opensrp_user}/" -e "/org.quartz.dataSource.motechDS.password=/ s/=.*/=${mysql_opensrp_password}/" /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/src/main/resources/quartz.properties 
 
-RUN sed -i -e "/couchdb.db.opensrp=/ s/=.*/=${couchdb_opensrp_db}/" -e "/couchdb.db.form=/ s/=.*/=${couchdb_form_db}/" -e "/couchdb.db.atomfeed=/ s/=.*/=${couchdb_atomfeed_db}/"   /tmp/opensrp-server-${OPENSRP_TAG}/build/maven.properties 
-RUN sed -i -e "/couchdb.db.mcts=/ s/=.*/=${couchdb_mcts_db}/"  -e "/couchdb.db.motech-scheduletracking=/ s/=.*/=${couchdb_motech_db}/" -e "/couchdb.db.error=/ s/=.*/=${couchdb_error_db}/"   /tmp/opensrp-server-${OPENSRP_TAG}/build/maven.properties 
+RUN sed -i -e "/couchdb.db.opensrp=/ s/=.*/=${couchdb_opensrp_db}/" -e "/couchdb.db.form=/ s/=.*/=${couchdb_form_db}/" -e "/couchdb.db.atomfeed=/ s/=.*/=${couchdb_atomfeed_db}/"   /tmp/opensrp-server-${opensrp_server_tag}/build/maven.properties 
+RUN sed -i -e "/couchdb.db.mcts=/ s/=.*/=${couchdb_mcts_db}/"  -e "/couchdb.db.motech-scheduletracking=/ s/=.*/=${couchdb_motech_db}/" -e "/couchdb.db.error=/ s/=.*/=${couchdb_error_db}/"   /tmp/opensrp-server-${opensrp_server_tag}/build/maven.properties 
 
-RUN sed -i -e "/db.quartz=/ s/=.*/=${mysql_motech_database}/"  -e "/db.reporting=/ s/=.*/=${mysql_opensrp_database}/" -e "/db.reporting.report=/ s/=.*/=${mysql_reporting_database}/" -e "/db.reporting.anm=/ s/=.*/=${mysql_anm_database}/"   /tmp/opensrp-server-${OPENSRP_TAG}/build/maven.properties 
+RUN sed -i -e "/db.quartz=/ s/=.*/=${mysql_motech_database}/"  -e "/db.reporting=/ s/=.*/=${mysql_opensrp_database}/" -e "/db.reporting.report=/ s/=.*/=${mysql_reporting_database}/" -e "/db.reporting.anm=/ s/=.*/=${mysql_anm_database}/"   /tmp/opensrp-server-${opensrp_server_tag}/build/maven.properties 
 
-RUN sed -i -e "/username=/ s/=.*/=${postgres_opensrp_user}/"  -e "/password=/ s/=.*/=${postgres_opensrp_password}/" -e "/url=/ s/=.*/=${postgres_opensrp_jdbc}/"  /tmp/opensrp-server-${OPENSRP_TAG}/opensrp-web/src/main/webapp/META-INF/context.xml
+RUN sed -i -e "/username=/ s/=.*/=${postgres_opensrp_user}/"  -e "/password=/ s/=.*/=${postgres_opensrp_password}/" -e "/url=/ s/=.*/=${postgres_opensrp_jdbc}/"  /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/src/main/webapp/META-INF/context.xml
 
 #compile opensrp war
 RUN mvn clean package -Dmaven.test.skip=true -P postgres -f /tmp/opensrp-server-${opensrp_server_tag}/pom.xml && \
