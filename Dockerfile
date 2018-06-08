@@ -418,7 +418,7 @@ RUN apt-get update && apt-get install -y maven
 ARG opensrp_server_tag
 
 #openmrs settings
-ARG openmrs_url=http:\/\/localhost:8080\/openmrs\/
+ARG openmrs_url="http:\/\/localhost:8080\/openmrs\/"
 ARG openmrs_username=admin
 ARG openmrs_password=Admin123
 
@@ -448,9 +448,9 @@ ARG mysql_openmrs_database=openmrs
 ARG mysql_motech_database=motechquartz
 ARG mysql_reporting_database=report
 ARG mysql_anm_database=anm_report
-ARG mysql_opensrp_jdbc=jdbc:mysql:\/\/${mysql_host}:${mysql_port}\/${mysql_opensrp_database}?createDatabaseIfNotExist=true
-ARG mysql_opensrp_jdbc_wo=jdbc:mysql:\/\/${mysql_host}:${mysql_port}
-ARG mysql_motech_jdbc=jdbc:mysql:\/\/${mysql_host}:${mysql_port}\/${mysql_motech_database}
+ARG mysql_opensrp_jdbc="jdbc:mysql:\/\/${mysql_host}:${mysql_port}\/${mysql_opensrp_database}?createDatabaseIfNotExist=true"
+ARG mysql_opensrp_jdbc_wo="jdbc:mysql:\/\/${mysql_host}:${mysql_port}"
+ARG mysql_motech_jdbc="jdbc:mysql:\/\/${mysql_host}:${mysql_port}\/${mysql_motech_database}"
 ENV MYSQL_OPENSRP_USER $mysql_opensrp_password
 ENV MYSQL_OPENSRP_PASSWORD $mysql_opensrp_user
 ENV MYSQL_OPENSRP_DATABASE $mysql_opensrp_database
@@ -473,7 +473,7 @@ ARG postgres_port=5432
 ARG postgres_opensrp_user=opensrp_admin
 ARG postgres_opensrp_password=admin
 ARG postgres_opensrp_database=opensrp
-ARG postgres_opensrp_jdbc=jdbc:postgresql:\/\/${postgres_host}:${postgres_port}\/${postgres_opensrp_database}
+ARG postgres_opensrp_jdbc="jdbc:postgresql:\/\/${postgres_host}:${postgres_port}\/${postgres_opensrp_database}"
 ENV POSTGRES_OPENSRP_DATABASE $postgres_opensrp_database
 ENV POSTGRES_OPENSRP_USER $postgres_opensrp_user
 ENV POSTGRES_OPENSRP_PASSWORD $postgres_opensrp_password
