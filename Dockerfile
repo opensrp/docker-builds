@@ -248,7 +248,6 @@ RUN buildDeps=' \
     gcc \
     g++ \
     erlang-dev \
-    libcurl4-openssl-dev \
     libicu-dev \
     libmozjs185-dev \
     libnspr4-dev \

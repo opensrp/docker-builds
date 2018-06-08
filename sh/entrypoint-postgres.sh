@@ -184,7 +184,7 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
 
 	echo "Migrations finished"
 	"${psql[@]}" --username postgres <<-EOSQL
-		ALTER USER $POSTGRES_OPENSRP_USER WITH NOSUPERUSER";
+		ALTER USER $POSTGRES_OPENSRP_USER WITH NOSUPERUSER;
 	EOSQL
 	pg_ctl -D "$PGDATA" -m fast -w stop
 	echo  'Postgres stopped'
