@@ -423,8 +423,6 @@ ARG openmrs_username=admin
 ARG openmrs_password=Admin123
 
 #couchdb settings
-ARG couchdb_host=localhost
-ARG couchdb_port=5984
 ARG couchdb_username=rootuser
 ARG couchdb_password=adminpass
 ARG couchdb_opensrp_db=opensrp
@@ -437,8 +435,6 @@ ENV COUCHDB_USER $couchdb_username
 ENV COUCHDB_PASSWORD $couchdb_password
 
 #mysql settings
-ARG mysql_host=localhost
-ARG mysql_port=3306
 ARG mysql_opensrp_user=opensrp
 ARG mysql_opensrp_password=opensrp
 ARG mysql_opensrp_database=opensrp
@@ -448,9 +444,9 @@ ARG mysql_openmrs_database=openmrs
 ARG mysql_motech_database=motechquartz
 ARG mysql_reporting_database=report
 ARG mysql_anm_database=anm_report
-ARG mysql_opensrp_jdbc="jdbc:mysql:\/\/${mysql_host}:${mysql_port}\/${mysql_opensrp_database}?createDatabaseIfNotExist=true"
-ARG mysql_opensrp_jdbc_wo="jdbc:mysql:\/\/${mysql_host}:${mysql_port}"
-ARG mysql_motech_jdbc="jdbc:mysql:\/\/${mysql_host}:${mysql_port}\/${mysql_motech_database}"
+ARG mysql_opensrp_jdbc="jdbc:mysql:\/\/localhost:3306\/${mysql_opensrp_database}?createDatabaseIfNotExist=true"
+ARG mysql_opensrp_jdbc_wo="jdbc:mysql:\/\/localhost:3306"
+ARG mysql_motech_jdbc="jdbc:mysql:\/\/localhost:3306\/${mysql_motech_database}"
 ENV MYSQL_OPENSRP_USER $mysql_opensrp_password
 ENV MYSQL_OPENSRP_PASSWORD $mysql_opensrp_user
 ENV MYSQL_OPENSRP_DATABASE $mysql_opensrp_database
@@ -460,25 +456,20 @@ ENV MYSQL_REPORTING_DATABASE $mysql_reporting_database
 ENV MYSQL_ANM_DATABASE $mysql_anm_database
 ENV MYSQL_OPENMRS_USER $mysql_openmrs_user
 ENV MYSQL_OPENMRS_PASSWORD $mysql_openmrs_password
-ENV MYSQL_OPENMRS_JDBC "jdbc:mysql:\/\/${mysql_host}:${mysql_port}/${MYSQL_OPENMRS_DATABASE}"
+
 
 #redis settings
-ARG redis_host=localhost
-ARG redis_port=6379
 ARG redis_password=Red1SP@S5
 ENV REDIS_PASSWORD $redis_password
 
 #postgres settings
-ARG postgres_host=localhost
-ARG postgres_port=5432
 ARG postgres_opensrp_user=opensrp_admin
 ARG postgres_opensrp_password=admin
 ARG postgres_opensrp_database=opensrp
-ARG postgres_opensrp_jdbc="jdbc:postgresql:\/\/${postgres_host}:${postgres_port}\/${postgres_opensrp_database}"
+ARG postgres_opensrp_jdbc="jdbc:postgresql:\/\/localhost:5432\/${postgres_opensrp_database}"
 ENV POSTGRES_OPENSRP_DATABASE $postgres_opensrp_database
 ENV POSTGRES_OPENSRP_USER $postgres_opensrp_user
 ENV POSTGRES_OPENSRP_PASSWORD $postgres_opensrp_password
-ENV POSTGRES_OPENSRP_JDBC $postgres_opensrp_jdbc
 
 #Download opensrp_server
 RUN wget --quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/${opensrp_server_tag}.tar.gz -O /tmp/${opensrp_server_tag}.tar.gz && \
@@ -487,13 +478,13 @@ mkdir /migrate && tar -xf /tmp/${opensrp_server_tag}.tar.gz -C /tmp && cp -R /tm
 #Update property files 
 RUN sed -i -e "/openmrs.url=/ s/=.*/=${openmrs_url}/" -e "/openmrs.username=/ s/=.*/=${openmrs_username}/" -e "/openmrs.password=/ s/=.*/=${openmrs_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
-RUN sed -i -e "/couchdb.server=/ s/=.*/=${couchdb_host}/" -e "/couchdb.port=/ s/=.*/=${couchdb_port}/" -e "/couchdb.username=/ s/=.*/=${couchdb_username}/" -e "/couchdb.password=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
+RUN sed -i -e "/couchdb.server=/ s/=.*/=localhost/" -e "/couchdb.port=/ s/=.*/=5984/" -e "/couchdb.username=/ s/=.*/=${couchdb_username}/" -e "/couchdb.password=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
 RUN sed -i -e "/jdbc.username=/ s/=.*/=${mysql_opensrp_user}/" -e "/jdbc.password=/ s/=.*/=${mysql_opensrp_password}/" -e "/jdbc.url=/ s/=.*/=${mysql_opensrp_jdbc}/" -e "/jdbc.url-wo-db=/ s/=.*/=${mysql_opensrp_jdbc_wo}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
-RUN sed -i -e "/redis.host=/ s/=.*/=${redis_host}/" -e "/redis.port=/ s/=.*/=${redis_port}/" -e "/redis.password=/ s/=.*/=${redis_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
+RUN sed -i -e "/redis.host=/ s/=.*/=localhost/" -e "/redis.port=/ s/=.*/=6379/" -e "/redis.password=/ s/=.*/=${redis_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
-RUN sed -i -e "/host=/ s/=.*/=${couchdb_host}/" -e "/port=/ s/=.*/=${couchdb_port}/" -e "/username=/ s/=.*/=${couchdb_username}/" -e "/password=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/couchdb.properties 
+RUN sed -i -e "/host=/ s/=.*/=localhost/" -e "/port=/ s/=.*/=5984/" -e "/username=/ s/=.*/=${couchdb_username}/" -e "/password=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/couchdb.properties 
 
 RUN sed -i -e "/org.quartz.dataSource.motechDS.URL=/ s/=.*/=${mysql_motech_jdbc}/" -e "/org.quartz.dataSource.motechDS.user=/ s/=.*/=${mysql_opensrp_user}/" -e "/org.quartz.dataSource.motechDS.password=/ s/=.*/=${mysql_opensrp_password}/" /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/src/main/resources/quartz.properties 
 
