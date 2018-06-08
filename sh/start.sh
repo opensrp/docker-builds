@@ -14,6 +14,11 @@ delimiter=;
 full_line_delimiter=false
 auto_commit=true
 changelog=changelog
+core_tablespace_location=$POSTGRES_OPENSRP_TABLESPACE_DIR/core
+error_tablespace_location=$POSTGRES_OPENSRP_TABLESPACE_DIR/error
+schedule_tablespace_location=$POSTGRES_OPENSRP_TABLESPACE_DIR/schedule
+feed_tablespace_location=$POSTGRES_OPENSRP_TABLESPACE_DIR/feed
+form_tablespace_location=$POSTGRES_OPENSRP_TABLESPACE_DIR/form
 CONF
 
 echo "Migration properties file created"
@@ -105,15 +110,5 @@ echo "Finished CouchDB Lucene Initialization"
 cd $(dirname $0)
 ./entrypoint-mysql.sh
 ./entrypoint-postgres.sh
-
-echo "Starting migrations"
-
-gosu postgres /usr/lib/postgresql/10/bin/postgres -D /var/lib/postgresql/data
-
-/opt/mybatis-migrations-3.3.4/bin/migrate up --path=/migrate
-
-echo "Migrations finished"
-
-gosu postgres pg_ctl -D "$PGDATA" -m fast -w stop
 
 exec /usr/bin/supervisord
