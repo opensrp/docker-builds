@@ -170,15 +170,8 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
 	EOSQL
 	echo
 
-	echo "Starting migrations"
-
-	/opt/mybatis-migrations-3.3.4/bin/migrate up --path=/migrate
-	
-	echo "Migrations finished"
-
 	PGUSER="${PGUSER:-postgres}" \
 	pg_ctl -D "$PGDATA" -m fast -w stop
-
 
 	echo
 	echo 'PostgreSQL init process complete; ready for start up.'

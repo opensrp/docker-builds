@@ -106,4 +106,14 @@ cd $(dirname $0)
 ./entrypoint-mysql.sh
 ./entrypoint-postgres.sh
 
+echo "Starting migrations"
+
+gosu postgres /usr/lib/postgresql/10/bin/postgres -D /var/lib/postgresql/data
+
+/opt/mybatis-migrations-3.3.4/bin/migrate up --path=/migrate
+
+echo "Migrations finished"
+
+gosu postgres pg_ctl -D "$PGDATA" -m fast -w stop
+
 exec /usr/bin/supervisord
