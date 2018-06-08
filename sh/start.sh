@@ -5,9 +5,9 @@ echo "Creating migration properties file"
 cat <<CONF > /migrate/environments/development.properties
 time_zone=GMT+0:00
 driver=org.postgresql.Driver
-url=jdbc:postgresql://localhost:5432/$POSTGRES_OPENSRP_DATABASE
-username=postgres
-password=$POSTGRES_MAIN_PASSWORD
+url=$POSTGRES_OPENSRP_JDBC
+username=$POSTGRES_OPENSRP_USER
+password=$POSTGRES_OPENSRP_PASSWORD
 script_char_set=UTF-8
 send_full_script=true
 delimiter=;
@@ -41,7 +41,7 @@ touch /root/.OpenMRS/openmrs-runtime.properties
 cat > /root/.OpenMRS/openmrs-runtime.properties <<- EOF
 	connection.username=${MYSQL_OPENMRS_USER}
 	connection.password=${MYSQL_OPENMRS_PASSWORD}
-	connection.url=jdbc:mysql://localhost:3306/${MYSQL_OPENMRS_DATABASE}?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+	connection.url=${MYSQL_OPENMRS_JDBC}?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
 	module.allow_web_admin=true
 	auto_update_database=false
 	sync.mandatory=false

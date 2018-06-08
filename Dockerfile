@@ -460,6 +460,7 @@ ENV MYSQL_REPORTING_DATABASE $mysql_reporting_database
 ENV MYSQL_ANM_DATABASE $mysql_anm_database
 ENV MYSQL_OPENMRS_USER $mysql_openmrs_user
 ENV MYSQL_OPENMRS_PASSWORD $mysql_openmrs_password
+ENV MYSQL_OPENMRS_JDBC "jdbc:mysql:\/\/${mysql_host}:${mysql_port}/${MYSQL_OPENMRS_DATABASE}"
 
 #redis settings
 ARG redis_host=localhost
@@ -477,10 +478,11 @@ ARG postgres_opensrp_jdbc="jdbc:postgresql:\/\/${postgres_host}:${postgres_port}
 ENV POSTGRES_OPENSRP_DATABASE $postgres_opensrp_database
 ENV POSTGRES_OPENSRP_USER $postgres_opensrp_user
 ENV POSTGRES_OPENSRP_PASSWORD $postgres_opensrp_password
+ENV POSTGRES_OPENSRP_JDBC $postgres_opensrp_jdbc
 
 #Download opensrp_server
 RUN wget --quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/${opensrp_server_tag}.tar.gz -O /tmp/${opensrp_server_tag}.tar.gz && \
-mkdir /migrate && tar -xf /tmp/${opensrp_server_tag}.tar.gz -C /tmp && cp -R /tmp/opensrp-server-${opensrp_server_tag}/assets/migrations /migrate 
+mkdir /migrate && tar -xf /tmp/${opensrp_server_tag}.tar.gz -C /tmp && cp -R /tmp/opensrp-server-${opensrp_server_tag}/assets/migrations/* /migrate 
 
 #Update property files 
 RUN sed -i -e "/openmrs.url=/ s/=.*/=${openmrs_url}/" -e "/openmrs.username=/ s/=.*/=${openmrs_username}/" -e "/openmrs.password=/ s/=.*/=${openmrs_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
