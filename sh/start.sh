@@ -6,8 +6,8 @@ cat <<CONF > /migrate/environments/development.properties
 time_zone=GMT+0:00
 driver=org.postgresql.Driver
 url=jdbc:postgresql://localhost:5432/$POSTGRES_OPENSRP_DATABASE
-username=postgres
-password=$POSTGRES_MAIN_PASSWORD
+username=$POSTGRES_OPENSRP_USER
+password=$POSTGRES_OPENSRP_PASSWORD
 script_char_set=UTF-8
 send_full_script=true
 delimiter=;

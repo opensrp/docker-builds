@@ -222,6 +222,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     libmozjs185-1.0 \
     libnspr4 \
     libnspr4-0d \
+    libcurl4-openssl-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # https://www.apache.org/dist/couchdb/KEYS
@@ -350,8 +351,6 @@ COPY composed/files/openmrs_modules/*.omod /root/.OpenMRS/modules/
 ENV CATALINA_HOME /opt/tomcat
 
 ENV PATH $PATH:$CATALINA_HOME/bin
-
-VOLUME "/opt/tomcat/webapps"
 
 EXPOSE 8080
 
