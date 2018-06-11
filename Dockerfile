@@ -341,29 +341,29 @@ rm -rf /opt/tomcat/webapps/docs && \
 rm -rf /opt/tomcat/webapps/ROOT
 
 #split opensrp and openmrs tomcat instances
-RUN mkdir -p /opt/tomcat/instances/opensrp && mkdir -p /opt/tomcat/instances/openmrs && \
-cp -pr /opt/tomcat/conf /opt/tomcat/instances/opensrp &&  \
-cp -pr /opt/tomcat/webapps /opt/tomcat/instances/opensrp && \
-cp -pr /opt/tomcat/bin/catalina.sh /opt/tomcat/instances/opensrp/bin && \
-cp -pr /opt/tomcat/bin/startup.sh /opt/tomcat/instances/opensrp/bin && \
-cp -pr /opt/tomcat/bin/shutdown.sh /opt/tomcat/instances/opensrp/bin && \
-cp -pr /opt/tomcat/instances/opensrp /opt/tomcat/instances/openmrs
+RUN mkdir -p /opt/tomcat/instances/opensrp/bin && mkdir -p /opt/tomcat/instances/opensrp/conf && mkdir -p /opt/tomcat/instances/opensrp/webapps && \
+cp -R /opt/tomcat/conf /opt/tomcat/instances/opensrp &&  \
+cp -R /opt/tomcat/webapps /opt/tomcat/instances/opensrp && \
+cp /opt/tomcat/bin/catalina.sh /opt/tomcat/instances/opensrp/bin && \
+cp /opt/tomcat/bin/startup.sh /opt/tomcat/instances/opensrp/bin && \
+cp /opt/tomcat/bin/shutdown.sh /opt/tomcat/instances/opensrp/bin && \
+mkdir -p /opt/tomcat/instances/openmrs && \
+cp -R /opt/tomcat/instances/opensrp/* /opt/tomcat/instances/openmrs
 
-RUN echo <<CONFIG > /opt/tomcat/instances/opensrp/bin/setenv.sh 
-CATALINA_HOME=/opt/tomcat/
-CATALINA_BASE=/opt/tomcat/instances/opensrp
-CATALINA_OPTS="-Xms512m -Xmx1024m"
-CONFIG
+RUN touch /opt/tomcat/instances/opensrp/bin/setenv.sh  &&  touch /opt/tomcat/instances/openmrs/bin/setenv.sh 
 
+RUN echo 'CATALINA_HOME=/opt/tomcat/\n\
+CATALINA_BASE=/opt/tomcat/instances/opensrp\n\
+CATALINA_OPTS="-Xms512m -Xmx1024m"\n'\
+> /opt/tomcat/instances/opensrp/bin/setenv.sh
 
-RUN echo <<CONFIG > /opt/tomcat/instances/openmrs/bin/setenv.sh 
-CATALINA_HOME=/opt/tomcat/
-CATALINA_BASE=/opt/tomcat/instances/openmrs
-CATALINA_OPTS="-Xms512m -Xmx1024m"
-CONFIG
+RUN echo 'CATALINA_HOME=/opt/tomcat/\n\
+CATALINA_BASE=/opt/tomcat/instances/openmrs\n\
+CATALINA_OPTS="-Xms512m -Xmx1024m"\n'\
+> /opt/tomcat/instances/openmrs/bin/setenv.sh
 
 #change ports for openmrs tomcat
-RUN sed -i -e "/8005/8006/" -e "/8080/8081/" -e "/8443/8444/" -e "/8009/8010/" /opt/tomcat/instances/openmrs/config/server.xml 
+RUN sed -i -e "s/8005/8006/g" -e "s/8080/8081/g" -e "s/8443/8444/g" -e "s/8009/8010/g" /opt/tomcat/instances/openmrs/conf/server.xml 
 
 # Download openmrs war and modules
 RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
@@ -376,7 +376,7 @@ ENV CATALINA_HOME /opt/tomcat
 
 ENV PATH $PATH:$CATALINA_HOME/bin
 
-EXPOSE 8080, 8081
+EXPOSE 8080 8081
 
 # Add mybatis migrations
 RUN wget --quiet --no-cookies https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip -O /opt/mybatis-migrations-3.3.4.zip
