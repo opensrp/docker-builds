@@ -82,53 +82,36 @@ ARG openmrs_username=admin
 ARG openmrs_password=Admin123
 
 #couchdb settings
-ARG couchdb_username=rootuser
-ARG couchdb_password=adminpass
+ARG couchdb_username=${COUCHDB_USER}
+ARG couchdb_password=${COUCHDB_PASSWORD}
 ARG couchdb_opensrp_db=opensrp
 ARG couchdb_form_db=opensrp-form
 ARG couchdb_atomfeed_db=atomfeed
 ARG couchdb_mcts_db=opensrp-mcts
 ARG couchdb_motech_db=motech-scheduletracking-api
 ARG couchdb_error_db=opensrp-errortrace
-ENV COUCHDB_USER $couchdb_username
-ENV COUCHDB_PASSWORD $couchdb_password
-
 #mysql settings
-ARG mysql_opensrp_user=opensrp
-ARG mysql_opensrp_password=opensrp
-ARG mysql_opensrp_database=opensrp
-ARG mysql_openmrs_user=openmrs
-ARG mysql_openmrs_password=openmrs
-ARG mysql_openmrs_database=openmrs
-ARG mysql_motech_database=motechquartz
-ARG mysql_reporting_database=report
-ARG mysql_anm_database=anm_report
+ARG mysql_opensrp_user=${MYSQL_OPENSRP_USER}
+ARG mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
+ARG mysql_opensrp_database=${MYSQL_OPENSRP_DATABASE}
+ARG mysql_openmrs_user=${MYSQL_OPENMRS_USER}
+ARG mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
+ARG mysql_openmrs_database=${MYSQL_OPENMRS_DATABASE}
+ARG mysql_motech_database=${MYSQL_MOTECH_DATABASE}
+ARG mysql_reporting_database=${MYSQL_REPORTING_DATABASE}
+ARG mysql_anm_database=${MYSQL_ANM_DATABASE}
 ARG mysql_opensrp_jdbc="jdbc:mysql:\/\/mysql:3306\/${mysql_opensrp_database}?createDatabaseIfNotExist=true"
 ARG mysql_opensrp_jdbc_wo="jdbc:mysql:\/\/mysql:3306"
 ARG mysql_motech_jdbc="jdbc:mysql:\/\/mysql:3306\/${mysql_motech_database}"
-ENV MYSQL_OPENSRP_USER $mysql_opensrp_password
-ENV MYSQL_OPENSRP_PASSWORD $mysql_opensrp_user
-ENV MYSQL_OPENSRP_DATABASE $mysql_opensrp_database
-ENV MYSQL_OPENMRS_DATABASE $mysql_openmrs_database
-ENV MYSQL_MOTECH_DATABASE $mysql_motech_database
-ENV MYSQL_REPORTING_DATABASE $mysql_reporting_database
-ENV MYSQL_ANM_DATABASE $mysql_anm_database
-ENV MYSQL_OPENMRS_USER $mysql_openmrs_user
-ENV MYSQL_OPENMRS_PASSWORD $mysql_openmrs_password
-
 
 #redis settings
-ARG redis_password=Red1SP@S5
-ENV REDIS_PASSWORD $redis_password
+ARG redis_password=${REDIS_PASSWORD}
 
 #postgres settings
-ARG postgres_opensrp_user=opensrp_admin
-ARG postgres_opensrp_password=admin
-ARG postgres_opensrp_database=opensrp
+ARG postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
+ARG postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
+ARG postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
 ARG postgres_opensrp_jdbc="jdbc:postgresql:\/\/postgres:5432\/${postgres_opensrp_database}"
-ENV POSTGRES_OPENSRP_DATABASE $postgres_opensrp_database
-ENV POSTGRES_OPENSRP_USER $postgres_opensrp_user
-ENV POSTGRES_OPENSRP_PASSWORD $postgres_opensrp_password
 
 RUN wget --quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/${opensrp_server_tag}.tar.gz -O /tmp/${opensrp_server_tag}.tar.gz 
 
