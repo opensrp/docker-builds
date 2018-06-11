@@ -5,7 +5,7 @@ MAINTAINER Samuel Githengi (sgithengi@ona.io)
 RUN apt-get update
 RUN apt-get install -y netcat
 
-ADD https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip /opt/mybatis-migrations-3.3.4.zip
+RUN wget --quiet --no-cookies https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip -O /opt/mybatis-migrations-3.3.4.zip
 
 # Unpack the distribution
 RUN unzip /opt/mybatis-migrations-3.3.4.zip -d /opt/
@@ -21,9 +21,8 @@ ADD sh/migrate.sh /opt/migrate.sh
 ARG opensrp_server_tag
 
 #Download opensrp_server
-RUN wget --quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/${opensrp_server_tag}.tar.gz -O /tmp/${opensrp_server_tag}.tar.gz && \
-tar -xf /tmp/${opensrp_server_tag}.tar.gz -C /tmp && cp -R /tmp/opensrp-server-${opensrp_server_tag}/assets/migrations/* /migrate && \
-cp -R /tmp/opensrp-server-${opensrp_server_tag}/* /tmp/opensrp-server
+RUN wget --quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/${opensrp_server_tag}.tar.gz -O /tmp/${opensrp_server_tag}.tar.gz 
 
+RUN tar -xf /tmp/${opensrp_server_tag}.tar.gz -C /tmp && cp -R /tmp/opensrp-server-${opensrp_server_tag}/assets/migrations/* /migrate
 
 ENTRYPOINT ["/opt/migrate.sh"]

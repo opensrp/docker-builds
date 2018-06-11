@@ -49,7 +49,6 @@ services:
         - postgres
       volumes:
         - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
-        - opensrp_server:/tmp/opensrp_server
       environment:
         DB_PORT_5432_TCP_ADDR: postgres
         DB_PORT_5432_TCP_PORT: 5432
@@ -61,6 +60,8 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+      args:
+          - opensrp_server_tag=${OPENSRP_SERVER_TAG}
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_MOTECH_DATABASE: ${MYSQL_MOTECH_DATABASE}
@@ -77,8 +78,6 @@ services:
       - redis
     ports:
       - "9090:8080"
-    volumes:
-      - opensrp_server:/tmp/opensrp_server
 volumes:
   opensrp_mysql:
   opensrp_couchdb:
@@ -86,4 +85,3 @@ volumes:
   opensrp_postgres:
   opensrp_postgres_tablespaces:
   opensrp_redis:
-  opensrp_server:
