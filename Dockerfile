@@ -340,9 +340,34 @@ rm -rf /opt/tomcat/webapps/examples && \
 rm -rf /opt/tomcat/webapps/docs && \
 rm -rf /opt/tomcat/webapps/ROOT
 
+#split opensrp and openmrs tomcat instances
+RUN mkdir -p /opt/tomcat/instances/opensrp && mkdir -p /opt/tomcat/instances/openmrs && \
+cp -pr /opt/tomcat/conf /opt/tomcat/instances/opensrp &&  \
+cp -pr /opt/tomcat/webapps /opt/tomcat/instances/opensrp && \
+cp -pr /opt/tomcat/bin/catalina.sh /opt/tomcat/instances/opensrp/bin && \
+cp -pr /opt/tomcat/bin/startup.sh /opt/tomcat/instances/opensrp/bin && \
+cp -pr /opt/tomcat/bin/shutdown.sh /opt/tomcat/instances/opensrp/bin && \
+cp -pr /opt/tomcat/instances/opensrp /opt/tomcat/instances/openmrs
+
+RUN echo <<CONFIG > /opt/tomcat/instances/opensrp/bin/setenv.sh 
+CATALINA_HOME=/opt/tomcat/
+CATALINA_BASE=/opt/tomcat/instances/opensrp
+CATALINA_OPTS="-Xms512m -Xmx1024m"
+CONFIG
+
+
+RUN echo <<CONFIG > /opt/tomcat/instances/openmrs/bin/setenv.sh 
+CATALINA_HOME=/opt/tomcat/
+CATALINA_BASE=/opt/tomcat/instances/openmrs
+CATALINA_OPTS="-Xms512m -Xmx1024m"
+CONFIG
+
+#change ports for openmrs tomcat
+RUN sed -i -e "/8005/8006/" -e "/8080/8081/" -e "/8443/8444/" -e "/8009/8010/" /opt/tomcat/instances/openmrs/config/server.xml 
+
 # Download openmrs war and modules
 RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
-mv openmrs.war /opt/tomcat/webapps && \
+mv openmrs.war /opt/tomcat/instances/openmrs/webapps && \
 mkdir /root/.OpenMRS 
 
 COPY composed/files/openmrs_modules/*.omod /root/.OpenMRS/modules/
@@ -351,7 +376,7 @@ ENV CATALINA_HOME /opt/tomcat
 
 ENV PATH $PATH:$CATALINA_HOME/bin
 
-EXPOSE 8080
+EXPOSE 8080, 8081
 
 # Add mybatis migrations
 RUN wget --quiet --no-cookies https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip -O /opt/mybatis-migrations-3.3.4.zip
@@ -505,7 +530,7 @@ RUN sed -i -e "/username\s*=/ s/=.*/=\"${postgres_opensrp_user}\"/"  -e "/passwo
 
 #compile opensrp war
 RUN mvn clean package -Dmaven.test.skip=true -P postgres -f /tmp/opensrp-server-${opensrp_server_tag}/pom.xml && \
-cp /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /opt/tomcat/webapps/
+cp /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /opt/tomcat/instances/opensrp/webapps/
 
 # Copying files
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
