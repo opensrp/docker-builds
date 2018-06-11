@@ -414,6 +414,7 @@ RUN apt-get update && apt-get install -y maven
 
 #Build arguments
 ARG opensrp_server_tag
+RUN : "${opensrp_server_tag:?Build argument needs to be set and non-empty.}"
 
 #openmrs settings
 ARG openmrs_url="http:\/\/localhost:8080\/openmrs\/"
@@ -421,8 +422,10 @@ ARG openmrs_username=admin
 ARG openmrs_password=Admin123
 
 #couchdb settings
-ARG couchdb_username=rootuser
-ARG couchdb_password=adminpass
+ARG couchdb_username
+RUN : "${couchdb_username:?Build argument needs to be set and non-empty.}"
+ARG couchdb_password
+RUN : "${couchdb_password:?Build argument needs to be set and non-empty.}"
 ARG couchdb_opensrp_db=opensrp
 ARG couchdb_form_db=opensrp-form
 ARG couchdb_atomfeed_db=atomfeed
@@ -433,11 +436,15 @@ ENV COUCHDB_USER $couchdb_username
 ENV COUCHDB_PASSWORD $couchdb_password
 
 #mysql settings
-ARG mysql_opensrp_user=opensrp
-ARG mysql_opensrp_password=opensrp
+ARG mysql_opensrp_user
+RUN : "${mysql_opensrp_user:?Build argument needs to be set and non-empty.}"
+ARG mysql_opensrp_password
+RUN : "${mysql_opensrp_password:?Build argument needs to be set and non-empty.}"
 ARG mysql_opensrp_database=opensrp
-ARG mysql_openmrs_user=openmrs
-ARG mysql_openmrs_password=openmrs
+ARG mysql_openmrs_user
+RUN : "${mysql_openmrs_user:?Build argument needs to be set and non-empty.}"
+ARG mysql_openmrs_password
+RUN : "${mysql_openmrs_password:?Build argument needs to be set and non-empty.}"
 ARG mysql_openmrs_database=openmrs
 ARG mysql_motech_database=motechquartz
 ARG mysql_reporting_database=report
@@ -457,12 +464,15 @@ ENV MYSQL_OPENMRS_PASSWORD $mysql_openmrs_password
 
 
 #redis settings
-ARG redis_password=Red1SP@S5
+ARG redis_password
+RUN : "${redis_password:?Build argument needs to be set and non-empty.}"
 ENV REDIS_PASSWORD $redis_password
 
 #postgres settings
-ARG postgres_opensrp_user=opensrp_admin
-ARG postgres_opensrp_password=admin
+ARG postgres_opensrp_user
+RUN : "${postgres_opensrp_user:?Build argument needs to be set and non-empty.}"
+ARG postgres_opensrp_password
+RUN : "${postgres_opensrp_password:?Build argument needs to be set and non-empty.}"
 ARG postgres_opensrp_database=opensrp
 ARG postgres_opensrp_jdbc="jdbc:postgresql:\/\/localhost:5432\/${postgres_opensrp_database}"
 ENV POSTGRES_OPENSRP_DATABASE $postgres_opensrp_database
