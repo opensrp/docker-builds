@@ -82,11 +82,45 @@ if [ ! -d "$MSDATA/mysql" ]; then
 		mysql+=( "$MYSQL_OPENMRS_DATABASE" )
 	fi
 
+	if [ "$MYSQL_OPENSRP_DATABASE" ]; then
+		echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_OPENSRP_DATABASE\` ;" | "${mysql[@]}"
+	fi
+
+	if [ "$MYSQL_REPORTING_DATABASE" ]; then
+		echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_REPORTING_DATABASE\` ;" | "${mysql[@]}"
+	fi
+
+	if [ "$MYSQL_ANM_DATABASE" ]; then
+		echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_ANM_DATABASE\` ;" | "${mysql[@]}"
+	fi
+
 	if [ "$MYSQL_OPENMRS_USER" -a "$MYSQL_OPENMRS_PASSWORD" ]; then
 		echo "CREATE USER '$MYSQL_OPENMRS_USER'@'%' IDENTIFIED BY '$MYSQL_OPENMRS_PASSWORD' ;" | "${mysql[@]}"
 
 		if [ "$MYSQL_OPENMRS_DATABASE" ]; then
 			echo "GRANT ALL ON \`$MYSQL_OPENMRS_DATABASE\`.* TO '$MYSQL_OPENMRS_USER'@'%' ;" | "${mysql[@]}"
+		fi
+
+		echo 'FLUSH PRIVILEGES ;' | "${mysql[@]}"
+	fi
+
+	if [ "$MYSQL_OPENSRP_USER" -a "$MYSQL_OPENSRP_PASSWORD" ]; then
+		echo "CREATE USER '$MYSQL_OPENSRP_USER'@'%' IDENTIFIED BY '$MYSQL_OPENSRP_PASSWORD' ;" | "${mysql[@]}"
+
+		if [ "$MYSQL_OPENSRP_DATABASE" ]; then
+			echo "GRANT ALL ON \`$MYSQL_OPENSRP_DATABASE\`.* TO '$MYSQL_OPENSRP_USER'@'%' ;" | "${mysql[@]}"
+		fi
+
+		if [ "$MYSQL_MOTECH_DATABASE" ]; then
+			echo "GRANT ALL ON \`$MYSQL_MOTECH_DATABASE\`.* TO '$MYSQL_OPENSRP_USER'@'%' ;" | "${mysql[@]}"
+		fi
+
+		if [ "$MYSQL_REPORTING_DATABASE" ]; then
+			echo "GRANT ALL ON \`$MYSQL_REPORTING_DATABASE\`.* TO '$MYSQL_OPENSRP_USER'@'%' ;" | "${mysql[@]}"
+		fi
+		
+		if [ "$MYSQL_ANM_DATABASE" ]; then
+			echo "GRANT ALL ON \`$MYSQL_ANM_DATABASE\`.* TO '$MYSQL_OPENSRP_USER'@'%' ;" | "${mysql[@]}"
 		fi
 
 		echo 'FLUSH PRIVILEGES ;' | "${mysql[@]}"

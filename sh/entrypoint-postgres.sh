@@ -161,7 +161,7 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
 	echo
 
 	"${psql[@]}" --username postgres <<-EOSQL
-		CREATE USER "$POSTGRES_OPENSRP_USER" WITH ENCRYPTED PASSWORD '$POSTGRES_OPENSRP_PASSWORD';
+		CREATE USER "$POSTGRES_OPENSRP_USER" WITH SUPERUSER ENCRYPTED PASSWORD '$POSTGRES_OPENSRP_PASSWORD';
 	EOSQL
 	echo
 
@@ -173,14 +173,20 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
 	PGUSER="${PGUSER:-postgres}" \
 	pg_ctl -D "$PGDATA" -m fast -w stop
 
-	echo "Starting migrations"
-
-	/opt/mybatis-migrations-3.3.4/bin/migrate up --path=/opt/migrate
-	
-	echo "Migrations finished"
-
 	echo
 	echo 'PostgreSQL init process complete; ready for start up.'
 	echo
+
+	echo  'Starting Postgres to run migrations'
+	pg_ctl -D $PGDATA -w start
+	echo "Starting migrations"
+	/opt/mybatis-migrations-3.3.4/bin/migrate up --path=/migrate
+
+	echo "Migrations finished"
+	"${psql[@]}" --username postgres <<-EOSQL
+		ALTER USER $POSTGRES_OPENSRP_USER WITH NOSUPERUSER;
+	EOSQL
+	pg_ctl -D "$PGDATA" -m fast -w stop
+	echo  'Postgres stopped'
 fi
 #Finished Postgres Initialization

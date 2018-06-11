@@ -2,19 +2,23 @@
 
 # Create migration properties file
 echo "Creating migration properties file"
-mkdir -p /opt/migrate
-cat <<CONF > /opt/migrate/environments/development.properties
+cat <<CONF > /migrate/environments/development.properties
 time_zone=GMT+0:00
 driver=org.postgresql.Driver
 url=jdbc:postgresql://localhost:5432/$POSTGRES_OPENSRP_DATABASE
-username=postgres
-password=$POSTGRES_MAIN_PASSWORD
+username=$POSTGRES_OPENSRP_USER
+password=$POSTGRES_OPENSRP_PASSWORD
 script_char_set=UTF-8
 send_full_script=true
 delimiter=;
 full_line_delimiter=false
 auto_commit=true
 changelog=changelog
+core_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/core'
+error_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/error'
+schedule_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/schedule'
+feed_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/feed'
+form_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/form'
 CONF
 
 echo "Migration properties file created"
