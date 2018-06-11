@@ -73,6 +73,9 @@ EXPOSE 8080
 #Install Maven  
 RUN apt-get update && apt-get install -y maven 
 
+#Build arguments
+ARG opensrp_server_tag
+
 #openmrs settings
 ARG openmrs_url="http:\/\/localhost:8080\/openmrs\/"
 ARG openmrs_username=admin
