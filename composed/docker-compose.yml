@@ -43,6 +43,8 @@ services:
       build:
         context: .
         dockerfile: ./Migration_Dockerfile
+        args:
+          - opensrp_server_tag=${OPENSRP_SERVER_TAG}
       depends_on:
         - postgres
       volumes:
@@ -55,8 +57,6 @@ services:
         DB_ENV_POSTGRES_USER: ${POSTGRES_OPENSRP_USER}
         DB_ENV_POSTGRES_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
         POSTGRES_OPENSRP_TABLESPACE_DIR: ${POSTGRES_OPENSRP_TABLESPACE_DIR}
-      args:
-        - opensrp_server_tag
   opensrp-composed:
     build:
       context: .

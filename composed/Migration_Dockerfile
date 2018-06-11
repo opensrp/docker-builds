@@ -22,8 +22,8 @@ ARG opensrp_server_tag
 
 #Download opensrp_server
 RUN wget --quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/${opensrp_server_tag}.tar.gz -O /tmp/${opensrp_server_tag}.tar.gz && \
-mkdir /migrate && tar -xf /tmp/${opensrp_server_tag}.tar.gz -C /tmp && cp -R /tmp/opensrp-server-${opensrp_server_tag}/assets/migrations/* /migrate 
+tar -xf /tmp/${opensrp_server_tag}.tar.gz -C /tmp && cp -R /tmp/opensrp-server-${opensrp_server_tag}/assets/migrations/* /migrate && \
+cp -R /tmp/opensrp-server-${opensrp_server_tag}/* /tmp/opensrp-server
 
-ADD /tmp/opensrp-server-${opensrp_server_tag} /tmp/opensrp-server
 
 ENTRYPOINT ["/opt/migrate.sh"]
