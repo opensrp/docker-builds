@@ -82,8 +82,8 @@ ARG openmrs_username=admin
 ARG openmrs_password=Admin123
 
 #couchdb settings
-ARG couchdb_username=${COUCHDB_USER}
-ARG couchdb_password=${COUCHDB_PASSWORD}
+ARG couchdb_username
+ARG couchdb_password
 ARG couchdb_opensrp_db=opensrp
 ARG couchdb_form_db=opensrp-form
 ARG couchdb_atomfeed_db=atomfeed
@@ -91,26 +91,26 @@ ARG couchdb_mcts_db=opensrp-mcts
 ARG couchdb_motech_db=motech-scheduletracking-api
 ARG couchdb_error_db=opensrp-errortrace
 #mysql settings
-ARG mysql_opensrp_user=${MYSQL_OPENSRP_USER}
-ARG mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
-ARG mysql_opensrp_database=${MYSQL_OPENSRP_DATABASE}
-ARG mysql_openmrs_user=${MYSQL_OPENMRS_USER}
-ARG mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
-ARG mysql_openmrs_database=${MYSQL_OPENMRS_DATABASE}
-ARG mysql_motech_database=${MYSQL_MOTECH_DATABASE}
-ARG mysql_reporting_database=${MYSQL_REPORTING_DATABASE}
-ARG mysql_anm_database=${MYSQL_ANM_DATABASE}
+ARG mysql_opensrp_user
+ARG mysql_opensrp_password
+ARG mysql_opensrp_database
+ARG mysql_openmrs_user
+ARG mysql_openmrs_password
+ARG mysql_openmrs_database
+ARG mysql_motech_database
+ARG mysql_reporting_database
+ARG mysql_anm_database
 ARG mysql_opensrp_jdbc="jdbc:mysql:\/\/mysql:3306\/${mysql_opensrp_database}?createDatabaseIfNotExist=true"
 ARG mysql_opensrp_jdbc_wo="jdbc:mysql:\/\/mysql:3306"
 ARG mysql_motech_jdbc="jdbc:mysql:\/\/mysql:3306\/${mysql_motech_database}"
 
 #redis settings
-ARG redis_password=${REDIS_PASSWORD}
+ARG redis_password
 
 #postgres settings
-ARG postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
-ARG postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
-ARG postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
+ARG postgres_opensrp_user
+ARG postgres_opensrp_password
+ARG postgres_opensrp_database
 ARG postgres_opensrp_jdbc="jdbc:postgresql:\/\/postgres:5432\/${postgres_opensrp_database}"
 
 RUN wget --quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/${opensrp_server_tag}.tar.gz -O /tmp/${opensrp_server_tag}.tar.gz 

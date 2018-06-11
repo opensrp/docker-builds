@@ -62,6 +62,21 @@ services:
       dockerfile: ./Dockerfile
       args:
           - opensrp_server_tag=${OPENSRP_SERVER_TAG}
+          - couchdb_username=${COUCHDB_USER}
+          - couchdb_password=${COUCHDB_PASSWORD}
+          - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
+          - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
+          - mysql_opensrp_database=${MYSQL_OPENSRP_DATABASE}
+          - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
+          - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
+          - mysql_openmrs_database=${MYSQL_OPENMRS_DATABASE}
+          - mysql_motech_database=${MYSQL_MOTECH_DATABASE}
+          - mysql_reporting_database=${MYSQL_REPORTING_DATABASE}
+          - mysql_anm_database=${MYSQL_ANM_DATABASE}
+          - redis_password=${REDIS_PASSWORD}
+          - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
+          - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
+          - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_MOTECH_DATABASE: ${MYSQL_MOTECH_DATABASE}
@@ -73,12 +88,6 @@ services:
       MYSQL_OPENSRP_DATABASE: ${MYSQL_OPENSRP_DATABASE}
       MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
       MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
-      COUCHDB_USER: ${COUCHDB_USER}
-      COUCHDB_PASSWORD: ${COUCHDB_PASSWORD}
-      POSTGRES_OPENSRP_DATABASE: ${POSTGRES_OPENSRP_DATABASE}
-      POSTGRES_OPENSRP_USER: ${POSTGRES_OPENSRP_USER}
-      POSTGRES_OPENSRP_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
     depends_on:
       - mysql
       - couchdb
