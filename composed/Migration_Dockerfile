@@ -17,4 +17,13 @@ WORKDIR /migrate
 # Add command scripts
 ADD sh/migrate.sh /opt/migrate.sh
 
+#Build arguments
+ARG opensrp_server_tag
+
+#Download opensrp_server
+RUN wget --quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/${opensrp_server_tag}.tar.gz -O /tmp/${opensrp_server_tag}.tar.gz && \
+mkdir /migrate && tar -xf /tmp/${opensrp_server_tag}.tar.gz -C /tmp && cp -R /tmp/opensrp-server-${opensrp_server_tag}/assets/migrations/* /migrate 
+
+ADD /tmp/opensrp-server-${opensrp_server_tag} /tmp/opensrp-server
+
 ENTRYPOINT ["/opt/migrate.sh"]

@@ -24,6 +24,11 @@ delimiter=;
 full_line_delimiter=false
 auto_commit=true
 changelog=changelog
+core_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/core'
+error_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/error'
+schedule_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/schedule'
+feed_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/feed'
+form_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/form'
 CONF
 
 echo $POSTGRES_OPENSRP_TABLESPACE_DIR
