@@ -143,16 +143,22 @@ if [ ! -d "$MSDATA/mysql" ]; then
 		EOSQL
 	fi
 
-	echo "Importing mysql data from backups"
+	if [ ! -f .mysql_migrations_complete ]; then
 
-	# Import data
-	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_MOTECH_DATABASE" < "/opt/sql/tables_quartz_mysql.sql"
-	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/openmrs.sql"
-	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/locations.sql"
-	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/person_attribute_type.sql"
-	mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/openmrs_user_property_trigger.sql"
+		echo "Importing mysql data from backups"
 
-	echo "Finished importing mysql data"
+		# Import data
+		mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_MOTECH_DATABASE" < "/opt/sql/tables_quartz_mysql.sql"
+		mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/openmrs.sql"
+		mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/locations.sql"
+		mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/person_attribute_type.sql"
+		mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/openmrs_user_property_trigger.sql"
+
+		touch .mysql_migrations_complete 
+
+		echo "Finished importing mysql data"
+
+	fi
 
 	if ! kill -s TERM "$pid" || ! wait "$pid"; then
 		echo >&2 'MySQL init process failed.'

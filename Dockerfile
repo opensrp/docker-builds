@@ -382,6 +382,9 @@ RUN set -ex; \
 RUN mkdir /data && chown redis:redis /data
 VOLUME /data
 
+#Install Maven  
+RUN apt-get update && apt-get install -y maven 
+
 # Install tomcat
 ENV TOMCAT_VERSION 7.0.72
 
@@ -449,10 +452,6 @@ EXPOSE 8080 8081
 RUN chown -R tomcat:tomcat /opt/tomcat
 
 #Download and configure opensrp server
-
-#Install Maven  
-RUN apt-get update && apt-get install -y maven 
-
 #Build arguments
 ARG opensrp_server_tag
 RUN : "${opensrp_server_tag:?Build argument needs to be set and non-empty.}"
