@@ -384,6 +384,10 @@ VOLUME /data
 
 # Install tomcat
 ENV TOMCAT_VERSION 7.0.72
+
+#Create tomcat user
+RUN groupadd tomcat && useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
+
 # Get Tomcat
 RUN wget --quiet --no-cookies https://archive.apache.org/dist/tomcat/tomcat-7/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz -O /tmp/tomcat.tgz && \
 tar xzvf /tmp/tomcat.tgz -C /opt && \
@@ -431,15 +435,18 @@ RUN sed -i -e "s/8005/8006/g" -e "s/8080/8081/g" -e "s/8443/8444/g" -e "s/8009/8
 # Download openmrs war and modules
 RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
 mv openmrs.war /opt/tomcat/instances/openmrs/webapps && \
-mkdir /root/.OpenMRS 
+mkdir /opt/tomcat/.OpenMRS 
 
-COPY composed/files/openmrs_modules/*.omod /root/.OpenMRS/modules/
+COPY composed/files/openmrs_modules/*.omod /opt/tomcat/.OpenMRS/modules/
 
 ENV CATALINA_HOME /opt/tomcat
 
 ENV PATH $PATH:$CATALINA_HOME/bin
 
 EXPOSE 8080 8081
+
+#update tomcat permissions
+RUN chown -R tomcat:tomcat /opt/tomcat
 
 #Download and configure opensrp server
 
