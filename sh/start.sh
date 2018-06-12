@@ -42,8 +42,8 @@ echo "OpenSRP tablespace root directory created"
 # Create openmrs properties file
 echo "Creating openmrs properties file"
 
-touch /root/.OpenMRS/openmrs-runtime.properties
-cat > /root/.OpenMRS/openmrs-runtime.properties <<- EOF
+touch /opt/tomcat/.OpenMRS/openmrs-runtime.properties
+cat > /opt/tomcat/.OpenMRS/openmrs-runtime.properties <<- EOF
 	connection.username=${MYSQL_OPENMRS_USER}
 	connection.password=${MYSQL_OPENMRS_PASSWORD}
 	connection.url=jdbc:mysql://localhost:3306/${MYSQL_OPENMRS_DATABASE}?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
