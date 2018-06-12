@@ -143,7 +143,7 @@ if [ ! -d "$MSDATA/mysql" ]; then
 		EOSQL
 	fi
 
-	if [ ! -f .mysql_migrations_complete ]; then
+	if [ ! -f /home/mysql/.mysql_migrations_complete ]; then
 
 		echo "Importing mysql data from backups"
 
@@ -154,7 +154,7 @@ if [ ! -d "$MSDATA/mysql" ]; then
 		mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/person_attribute_type.sql"
 		mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/openmrs_user_property_trigger.sql"
 
-		touch .mysql_migrations_complete 
+		touch /home/mysql/.mysql_migrations_complete 
 
 		echo "Finished importing mysql data"
 

@@ -107,6 +107,9 @@ chown -R couchdb:couchdb /opt/couchdb-lucene
 echo "Finished CouchDB Lucene Initialization"
 # Finished CouchDB Lucene Initialization
 
+mkdir -p /home/mysql
+chown mysql:mysql /home/mysql
+
 cd $(dirname $0)
 ./entrypoint-mysql.sh
 ./entrypoint-postgres.sh
