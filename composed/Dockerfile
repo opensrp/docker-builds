@@ -159,6 +159,8 @@ RUN sed -i -e "/openmrs.url\s*=/ s/=.*/=${openmrs_url}/" -e "/openmrs.username\s
 
 RUN sed -i -e "/couchdb.server\s*=/ s/=.*/=couchdb/" -e "/couchdb.port\s*=/ s/=.*/=5984/" -e "/couchdb.username\s*=/ s/=.*/=${couchdb_username}/" -e "/couchdb.password\s*=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
+RUN sed -i -e "/multimedia.directory.name\s*=/ s/=.*/=\/opt\/tomcat\/\.OpenMRS\/patient_images/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
+
 RUN sed -i -e "/jdbc.username\s*=/ s/=.*/=${mysql_opensrp_user}/" -e "/jdbc.password\s*=/ s/=.*/=${mysql_opensrp_password}/" -e "/jdbc.url\s*=/ s/=.*/=${mysql_opensrp_jdbc}/" -e "/jdbc.url-wo-db\s*=/ s/=.*/=${mysql_opensrp_jdbc_wo}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
 RUN sed -i -e "/redis.host\s*=/ s/=.*/=redis/" -e "/redis.port\s*=/ s/=.*/=6379/" -e "/redis.password\s*=/ s/=.*/=${redis_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
