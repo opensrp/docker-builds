@@ -19,4 +19,9 @@ if [ ! -f /opt/tomcat/.OpenMRS/openmrs-runtime.properties ]; then
 
 fi
 
+while [ ! -f /etc/migrations/.setup_view_configs_complete -o ! -f /etc/migrations/.mysql_migrations_complete ]; 
+ do echo 'waiting for database migrations to complete...'; 
+ sleep 5; 
+done;
+
 exec /usr/bin/supervisord

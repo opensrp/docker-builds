@@ -105,6 +105,8 @@ services:
     ports:
       - "9090:8080"
       - "9091:8081"
+    volumes:
+        - opensrp_migrations:/etc/migrations
 volumes:
   opensrp_mysql:
   opensrp_couchdb:

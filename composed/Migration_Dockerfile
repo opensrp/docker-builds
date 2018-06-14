@@ -16,10 +16,8 @@ RUN unzip /opt/mybatis-migrations-3.3.4.zip -d /opt/
 RUN rm -f /opt/mybatis-migrations-3.3.4.zip
 RUN chmod +x /opt/mybatis-migrations-3.3.4/bin/migrate
 
-WORKDIR /migrate
-
 # Add command scripts
-COPY sh/*.sh /opt/
+COPY sh/*.sh /usr/local/bin/
 
 #Build arguments
 ARG opensrp_server_tag
@@ -35,4 +33,4 @@ VOLUME /etc/migrations
 
 COPY sql /opt/sql
 
-ENTRYPOINT ["/opt/entrypoint-migrations.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint-migrations.sh"]

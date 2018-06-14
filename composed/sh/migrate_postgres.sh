@@ -14,8 +14,8 @@ cat <<CONF > /migrate/environments/development.properties
 time_zone=GMT+0:00
 driver=org.postgresql.Driver
 url=jdbc:postgresql://$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_OPENSRP_DATABASE
-username=$POSTGRES_OPENSRP_PASSWORD
-password=$POSTGRES_OPENSRP_USER
+username=$POSTGRES_OPENSRP_USER
+password=$POSTGRES_OPENSRP_PASSWORD
 script_char_set=UTF-8
 send_full_script=true
 delimiter=;
@@ -41,7 +41,7 @@ groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
 
 chown -R postgres:postgres $POSTGRES_OPENSRP_TABLESPACE_DIR
 
-/opt/mybatis-migrations-3.3.4/bin/migrate up
+/opt/mybatis-migrations-3.3.4/bin/migrate up --path /migrate
 
 if [ -d /tmp/opensrp-server-${OPENSRP_SERVER_TAG}/assets/tbreach_default_view_configs -a ! -f /etc/migrations/.setup_view_configs_complete ]; then
 	/tmp/opensrp-server-${OPENSRP_SERVER_TAG}/assets/tbreach_default_view_configs/setup_view_configs.sh -t postgres  -u $POSTGRES_OPENSRP_USER -pwd $POSTGRES_OPENSRP_PASSWORD -d $POSTGRES_OPENSRP_DATABASE -h postgres -f /tmp/opensrp-server-${OPENSRP_SERVER_TAG}/assets/tbreach_default_view_configs
