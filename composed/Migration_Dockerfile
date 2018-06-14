@@ -25,4 +25,14 @@ RUN wget --quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/
 
 RUN tar -xf /tmp/${opensrp_server_tag}.tar.gz -C /tmp && cp -R /tmp/opensrp-server-${opensrp_server_tag}/assets/migrations/* /migrate
 
+RUN mkdir -p /etc/migrations
+
+VOLUME /etc/migrations
+
+#Install database clients
+RUN apt-get update && \
+apt-get install -y mysql-client && \
+apt-get install -y postgresql-client && \
+rm -rf /var/lib/apt/lists/*
+
 ENTRYPOINT ["/opt/migrate.sh"]

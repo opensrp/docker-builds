@@ -42,10 +42,6 @@ ENV TOMCAT_VERSION 7.0.72
 RUN apt-get update && \
 apt-get install -y  build-essential curl wget software-properties-common vim telnet unzip tar
 
-RUN apt-get update && \
-apt-get install -y mysql-client && \
-rm -rf /var/lib/apt/lists/*
-
 #Create tomcat user
 RUN groupadd tomcat && useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
 
