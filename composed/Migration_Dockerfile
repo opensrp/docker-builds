@@ -4,7 +4,7 @@ MAINTAINER Samuel Githengi (sgithengi@ona.io)
 
 #Install database clients and netcat
 RUN apt-get update && \
-apt-get install -y netcat
+apt-get install -y netcat && \
 apt-get install -y mysql-client && \
 apt-get install -y postgresql-client && \
 rm -rf /var/lib/apt/lists/*

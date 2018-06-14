@@ -4,20 +4,18 @@
 
 echo "wait for postgres to be ready"
 
-while ! nc -q 1 $DB_PORT_5432_TCP_ADDR $DB_PORT_5432_TCP_PORT </dev/null;
+while ! nc -q 1 $POSTGRES_HOST $POSTGRES_PORT </dev/null;
 do
   echo "Waiting for database"
   sleep 10;
 done
 
-echo "wait for postgres to be ready"
-
 cat <<CONF > /migrate/environments/development.properties
 time_zone=GMT+0:00
 driver=org.postgresql.Driver
-url=jdbc:postgresql://$DB_PORT_5432_TCP_ADDR:$DB_PORT_5432_TCP_PORT/$DB_ENV_POSTGRES_SCHEMA
-username=$DB_ENV_POSTGRES_USER
-password=$DB_ENV_POSTGRES_PASSWORD
+url=jdbc:postgresql://$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_OPENSRP_DATABASE
+username=$POSTGRES_OPENSRP_PASSWORD
+password=$POSTGRES_OPENSRP_USER
 script_char_set=UTF-8
 send_full_script=true
 delimiter=;
