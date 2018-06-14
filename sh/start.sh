@@ -107,10 +107,6 @@ chown -R couchdb:couchdb /opt/couchdb-lucene
 echo "Finished CouchDB Lucene Initialization"
 # Finished CouchDB Lucene Initialization
 
-mkdir -p /etc/migrations
-chmod +w mysql /etc/migrations
-chmod +w postgres /etc/migrations
-
 cd $(dirname $0)
 ./entrypoint-mysql.sh
 ./entrypoint-postgres.sh
