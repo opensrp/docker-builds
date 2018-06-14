@@ -90,7 +90,7 @@ services:
           - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
           - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
           - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
-      environment:
+    environment:
         MYSQL_OPENMRS_DATABASE: ${MYSQL_OPENMRS_DATABASE}
         MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
         MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}

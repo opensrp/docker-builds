@@ -179,4 +179,6 @@ cp /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /opt
 # Copying files
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+COPY sh/*.sh /usr/local/bin/
+
 ENTRYPOINT ["/usr/local/bin/start.sh"]
