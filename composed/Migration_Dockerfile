@@ -16,6 +16,8 @@ RUN unzip /opt/mybatis-migrations-3.3.4.zip -d /opt/
 RUN rm -f /opt/mybatis-migrations-3.3.4.zip
 RUN chmod +x /opt/mybatis-migrations-3.3.4/bin/migrate
 
+WORKDIR /migrate
+
 # Add command scripts
 COPY sh/*.sh /usr/local/bin/
 
