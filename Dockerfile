@@ -559,7 +559,7 @@ COPY sh/*.sh /usr/local/bin/
 
 RUN mkdir -p /etc/migrations && groupadd migrations && \
 usermod -a -G migrations mysql && usermod -a -G migrations postgres && \
-chgrp -R migrations /etc/migrations && chmod g+r /etc/migrations
+chgrp -R migrations /etc/migrations && chmod -R g+w /etc/migrations
 
 VOLUME /etc/migrations
 
