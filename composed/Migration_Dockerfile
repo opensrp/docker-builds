@@ -35,4 +35,8 @@ apt-get install -y mysql-client && \
 apt-get install -y postgresql-client && \
 rm -rf /var/lib/apt/lists/*
 
+COPY sql /opt/sql
+
+COPY sh/*.sh /usr/local/bin/
+
 ENTRYPOINT ["/opt/migrate.sh"]

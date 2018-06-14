@@ -47,6 +47,7 @@ services:
           - opensrp_server_tag=${OPENSRP_SERVER_TAG}
       depends_on:
         - postgres
+        - mysql
       volumes:
         - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
         - opensrp_migrations:/etc/migrations
@@ -89,6 +90,10 @@ services:
           - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
           - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
           - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
+      environment:
+        MYSQL_OPENMRS_DATABASE: ${MYSQL_OPENMRS_DATABASE}
+        MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
+        MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
     depends_on:
       - mysql
       - couchdb
