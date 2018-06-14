@@ -455,6 +455,7 @@ RUN chown -R tomcat:tomcat /opt/tomcat
 #Build arguments
 ARG opensrp_server_tag
 RUN : "${opensrp_server_tag:?Build argument needs to be set and non-empty.}"
+ENV OPENSRP_SERVER_TAG $opensrp_server_tag
 
 #openmrs settings
 ARG openmrs_url="http:\/\/localhost:8081\/openmrs\/"
@@ -555,5 +556,7 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY composed/sql /opt/sql
 
 COPY sh/*.sh /usr/local/bin/
+
+VOLUME /etc/migrations
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]
