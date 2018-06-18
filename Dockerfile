@@ -563,4 +563,13 @@ chgrp -R migrations /etc/migrations && chmod -R g+w /etc/migrations
 
 VOLUME /etc/migrations
 
+#Download images from s3 and save to openmrs images directory
+ARG demo_data_tag
+ENV DEMO_DATA_TAG=$demo_data_tag
+
+RUN wget --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/images/images.tar.gz -O /tmp/images.tar.gz && \
+mkdir -p /opt/tomcat/.OpenMRS/patient_images/ && \
+tar -xf /tmp/images.tar.gz -C /opt/tomcat/.OpenMRS/patient_images && \
+rm /tmp/images.tar.gz
+
 ENTRYPOINT ["/usr/local/bin/start.sh"]

@@ -182,7 +182,8 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY sh/*.sh /usr/local/bin/
 
 #Download images from s3 and save to openmrs images directory
-RUN wget --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${DEMO_DATA_TAG}/images/images.tar.gz -O /tmp/images.tar.gz &&
+ARG demo_data_tag
+RUN wget --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/images/images.tar.gz -O /tmp/images.tar.gz && \
 mkdir -p /opt/tomcat/.OpenMRS/patient_images/ && \
 tar -xf /tmp/images.tar.gz -C /opt/tomcat/.OpenMRS/patient_images && \
 rm /tmp/images.tar.gz

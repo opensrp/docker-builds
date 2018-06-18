@@ -37,6 +37,7 @@ if [ ! -f /etc/migrations/.mysql_migrations_complete ]; then
 			gunzip /tmp/openmrs.sql.gz
 			mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" "$MYSQL_OPENMRS_DATABASE" < "/tmp/openmrs.sql"
 		fi
+	fi
 	#import demo data if demo data tag was not passed it was possible to extract the demo data 		
 	if [[ ! -f /tmp/openmrs.sql ]]; then
 	 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" "$MYSQL_OPENMRS_DATABASE" < "/opt/sql/openmrs.sql"
