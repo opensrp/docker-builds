@@ -49,3 +49,13 @@ if [ -d /tmp/opensrp-server-${OPENSRP_SERVER_TAG}/assets/tbreach_default_view_co
 elif [ ! -d /tmp/opensrp-server-${OPENSRP_SERVER_TAG}/assets/tbreach_default_view_configs ]; then
 	touch  /etc/migrations/.setup_view_configs_complete
 fi
+
+
+if [[ -n $DEMO_DATA_TAG ]];then
+	wget --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${DEMO_DATA_TAG}/sql/opensrp.sql.gz -O /tmp/opensrp.sql.gz
+	if [[ -f /tmp/opensrp.sql.gz ]]; then
+		gunzip  /tmp/opensrp.sql.gz	
+		PGPASSWORD=$POSTGRES_OPENSRP_PASSWORD psql -U $POSTGRES_OPENSRP_USER -h $POSTGRES_HOST -d $POSTGRES_OPENSRP_DATABASE -a -f /tmp/opensrp.sql
+	fi
+fi
+

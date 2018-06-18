@@ -69,6 +69,7 @@ services:
         MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
         MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
         OPENSRP_SERVER_TAG: ${OPENSRP_SERVER_TAG}
+        DEMO_DATA_TAG: ${DEMO_DATA_TAG}
   opensrp-composed:
     build:
       context: .

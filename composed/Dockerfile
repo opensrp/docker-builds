@@ -155,7 +155,7 @@ RUN sed -i -e "/openmrs.url\s*=/ s/=.*/=${openmrs_url}/" -e "/openmrs.username\s
 
 RUN sed -i -e "/couchdb.server\s*=/ s/=.*/=couchdb/" -e "/couchdb.port\s*=/ s/=.*/=5984/" -e "/couchdb.username\s*=/ s/=.*/=${couchdb_username}/" -e "/couchdb.password\s*=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
-RUN sed -i -e "/multimedia.directory.name\s*=/ s/=.*/=\/opt\/tomcat\/\.OpenMRS\/patient_images/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
+RUN sed -i -e "/multimedia.directory.name\s*=/ s/=.*/=\/opt\/tomcat\/\.OpenMRS/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
 RUN sed -i -e "/jdbc.username\s*=/ s/=.*/=${mysql_opensrp_user}/" -e "/jdbc.password\s*=/ s/=.*/=${mysql_opensrp_password}/" -e "/jdbc.url\s*=/ s/=.*/=${mysql_opensrp_jdbc}/" -e "/jdbc.url-wo-db\s*=/ s/=.*/=${mysql_opensrp_jdbc_wo}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
@@ -180,5 +180,12 @@ cp /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /opt
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY sh/*.sh /usr/local/bin/
+
+#Download images from s3 and save to openmrs images directory
+RUN wget --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${DEMO_DATA_TAG}/images/images.tar.gz -O /tmp/images.tar.gz &&
+mkdir -p /opt/tomcat/.OpenMRS/patient_images/ && \
+tar -xf /tmp/images.tar.gz -C /opt/tomcat/.OpenMRS/patient_images && \
+rm /tmp/images.tar.gz
+  
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]
