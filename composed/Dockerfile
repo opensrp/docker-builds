@@ -172,6 +172,8 @@ RUN sed -i -e "/db.quartz\s*=/ s/=.*/=${mysql_motech_database}/"  -e "/db.report
 
 RUN sed -i -e "/username\s*=/ s/=.*/=\"${postgres_opensrp_user}\"/"  -e "/password\s*=/ s/=.*/=\"${postgres_opensrp_password}\"/" -e "/url\s*=/ s/=.*/=\"${postgres_opensrp_jdbc}\"/"  /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/src/main/webapp/META-INF/context.xml
 
+RUN sed -i -e "/broker.url\s*=/ s/=.*/=tcp:\/\/activemq:61616/"   /tmp/opensrp-server-${opensrp_server_tag}/assets/config/activemq.properties
+
 #compile opensrp war
 RUN mvn clean package -Dmaven.test.skip=true -P postgres -f /tmp/opensrp-server-${opensrp_server_tag}/pom.xml && \
 cp /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /opt/tomcat/instances/opensrp/webapps/
