@@ -455,6 +455,7 @@ RUN chown -R tomcat:tomcat /opt/tomcat
 #Build arguments
 ARG opensrp_server_tag
 RUN : "${opensrp_server_tag:?Build argument needs to be set and non-empty.}"
+ENV OPENSRP_SERVER_TAG $opensrp_server_tag
 
 #openmrs settings
 ARG openmrs_url="http:\/\/localhost:8081\/openmrs\/"
@@ -528,7 +529,7 @@ RUN sed -i -e "/openmrs.url\s*=/ s/=.*/=${openmrs_url}/" -e "/openmrs.username\s
 
 RUN sed -i -e "/couchdb.server\s*=/ s/=.*/=localhost/" -e "/couchdb.port\s*=/ s/=.*/=5984/" -e "/couchdb.username\s*=/ s/=.*/=${couchdb_username}/" -e "/couchdb.password\s*=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
-RUN sed -i -e "/multimedia.directory.name\s*=/ s/=.*/=\/opt\/tomcat\/\.OpenMRS\/patient_images/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
+RUN sed -i -e "/multimedia.directory.name\s*=/ s/=.*/=\/opt\/tomcat\/\.OpenMRS/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
 RUN sed -i -e "/jdbc.username\s*=/ s/=.*/=${mysql_opensrp_user}/" -e "/jdbc.password\s*=/ s/=.*/=${mysql_opensrp_password}/" -e "/jdbc.url\s*=/ s/=.*/=${mysql_opensrp_jdbc}/" -e "/jdbc.url-wo-db\s*=/ s/=.*/=${mysql_opensrp_jdbc_wo}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
@@ -555,5 +556,20 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY composed/sql /opt/sql
 
 COPY sh/*.sh /usr/local/bin/
+
+RUN mkdir -p /etc/migrations && groupadd migrations && \
+usermod -a -G migrations mysql && usermod -a -G migrations postgres && \
+chgrp -R migrations /etc/migrations && chmod -R g+w /etc/migrations
+
+VOLUME /etc/migrations
+
+#Download images from s3 and save to openmrs images directory
+ARG demo_data_tag
+ENV DEMO_DATA_TAG=$demo_data_tag
+
+RUN wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/images/images.tar.gz -O /tmp/images.tar.gz && \
+mkdir -p /opt/tomcat/.OpenMRS/patient_images/ && \
+tar -xf /tmp/images.tar.gz -C /opt/tomcat/.OpenMRS/patient_images && \
+rm /tmp/images.tar.gz || :
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]

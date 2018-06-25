@@ -2,8 +2,12 @@ FROM java:openjdk-8u111-jre
 
 MAINTAINER Samuel Githengi (sgithengi@ona.io)
 
-RUN apt-get update
-RUN apt-get install -y netcat
+#Install database clients and netcat
+RUN apt-get update && \
+apt-get install -y netcat && \
+apt-get install -y mysql-client && \
+apt-get install -y postgresql-client && \
+rm -rf /var/lib/apt/lists/*
 
 RUN wget --quiet --no-cookies https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip -O /opt/mybatis-migrations-3.3.4.zip
 
@@ -15,7 +19,7 @@ RUN chmod +x /opt/mybatis-migrations-3.3.4/bin/migrate
 WORKDIR /migrate
 
 # Add command scripts
-ADD sh/migrate.sh /opt/migrate.sh
+COPY sh/*.sh /usr/local/bin/
 
 #Build arguments
 ARG opensrp_server_tag
@@ -25,4 +29,10 @@ RUN wget --quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/
 
 RUN tar -xf /tmp/${opensrp_server_tag}.tar.gz -C /tmp && cp -R /tmp/opensrp-server-${opensrp_server_tag}/assets/migrations/* /migrate
 
-ENTRYPOINT ["/opt/migrate.sh"]
+RUN mkdir -p /etc/migrations
+
+VOLUME /etc/migrations
+
+COPY sql /opt/sql
+
+ENTRYPOINT ["/usr/local/bin/entrypoint-migrations.sh"]

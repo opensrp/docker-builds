@@ -42,10 +42,6 @@ ENV TOMCAT_VERSION 7.0.72
 RUN apt-get update && \
 apt-get install -y  build-essential curl wget software-properties-common vim telnet unzip tar
 
-RUN apt-get update && \
-apt-get install -y mysql-client && \
-rm -rf /var/lib/apt/lists/*
-
 #Create tomcat user
 RUN groupadd tomcat && useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
 
@@ -159,7 +155,7 @@ RUN sed -i -e "/openmrs.url\s*=/ s/=.*/=${openmrs_url}/" -e "/openmrs.username\s
 
 RUN sed -i -e "/couchdb.server\s*=/ s/=.*/=couchdb/" -e "/couchdb.port\s*=/ s/=.*/=5984/" -e "/couchdb.username\s*=/ s/=.*/=${couchdb_username}/" -e "/couchdb.password\s*=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
-RUN sed -i -e "/multimedia.directory.name\s*=/ s/=.*/=\/opt\/tomcat\/\.OpenMRS\/patient_images/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
+RUN sed -i -e "/multimedia.directory.name\s*=/ s/=.*/=\/opt\/tomcat\/\.OpenMRS/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
 RUN sed -i -e "/jdbc.username\s*=/ s/=.*/=${mysql_opensrp_user}/" -e "/jdbc.password\s*=/ s/=.*/=${mysql_opensrp_password}/" -e "/jdbc.url\s*=/ s/=.*/=${mysql_opensrp_jdbc}/" -e "/jdbc.url-wo-db\s*=/ s/=.*/=${mysql_opensrp_jdbc_wo}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
@@ -176,6 +172,8 @@ RUN sed -i -e "/db.quartz\s*=/ s/=.*/=${mysql_motech_database}/"  -e "/db.report
 
 RUN sed -i -e "/username\s*=/ s/=.*/=\"${postgres_opensrp_user}\"/"  -e "/password\s*=/ s/=.*/=\"${postgres_opensrp_password}\"/" -e "/url\s*=/ s/=.*/=\"${postgres_opensrp_jdbc}\"/"  /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/src/main/webapp/META-INF/context.xml
 
+RUN sed -i -e "/broker.url\s*=/ s/=.*/=tcp:\/\/activemq:61616/"   /tmp/opensrp-server-${opensrp_server_tag}/assets/config/activemq.properties
+
 #compile opensrp war
 RUN mvn clean package -Dmaven.test.skip=true -P postgres -f /tmp/opensrp-server-${opensrp_server_tag}/pom.xml && \
 cp /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /opt/tomcat/instances/opensrp/webapps/
@@ -183,8 +181,15 @@ cp /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /opt
 # Copying files
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-COPY sql /opt/sql
-
 COPY sh/*.sh /usr/local/bin/
+
+#Download images from s3 and save to openmrs images directory
+ARG demo_data_tag
+
+RUN wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/images/images.tar.gz -O /tmp/images.tar.gz && \
+mkdir -p /opt/tomcat/.OpenMRS/patient_images/ && \
+tar -xf /tmp/images.tar.gz -C /opt/tomcat/.OpenMRS/patient_images && \
+rm /tmp/images.tar.gz || :
+  
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]
