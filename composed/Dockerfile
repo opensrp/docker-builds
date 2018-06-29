@@ -51,9 +51,6 @@ rm -rf /opt/tomcat/webapps/examples && \
 rm -rf /opt/tomcat/webapps/docs && \
 rm -rf /opt/tomcat/webapps/ROOT
 
-#Create openmrs data dir
-RUN mkdir -p /opt/tomcat/.OpenMRS
-
 #split opensrp and openmrs tomcat instances
 RUN mkdir -p /opt/tomcat/instances/opensrp/bin && mkdir -p /opt/tomcat/instances/opensrp/conf && \
 mkdir -p /opt/tomcat/instances/opensrp/webapps && mkdir -p /opt/tomcat/instances/opensrp/logs && \
@@ -89,6 +86,7 @@ $CATALINA_HOME/bin/catalina.sh run'\
 #change ports for openmrs tomcat
 RUN sed -i -e "s/8005/8006/g" -e "s/8080/8081/g" -e "s/8443/8444/g" -e "s/8009/8010/g" /opt/tomcat/instances/openmrs/conf/server.xml 
 
+#Create openmrs data dir
 RUN mkdir /opt/tomcat/.OpenMRS
 
 COPY files/openmrs_modules/*.omod /opt/tomcat/.OpenMRS/modules/

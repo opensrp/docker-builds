@@ -87,6 +87,7 @@ services:
         MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
         OPENSRP_SERVER_TAG: ${OPENSRP_SERVER_TAG}
         DEMO_DATA_TAG: ${DEMO_DATA_TAG}
+        APPLICATION_SUFFIX: ${APPLICATION_SUFFIX}
   opensrp-composed:
     build:
       context: .
@@ -112,4 +113,3 @@ volumes:
   opensrp_postgres_tablespaces:
   opensrp_redis:
   opensrp_migrations:
-  opensrp_tomcat_home:
