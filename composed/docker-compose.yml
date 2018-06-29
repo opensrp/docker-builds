@@ -45,12 +45,29 @@ services:
         dockerfile: ./Migration_Dockerfile
         args:
           - opensrp_server_tag=${OPENSRP_SERVER_TAG}
+          - couchdb_username=${COUCHDB_USER}
+          - couchdb_password=${COUCHDB_PASSWORD}
+          - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
+          - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
+          - mysql_opensrp_database=${MYSQL_OPENSRP_DATABASE}
+          - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
+          - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
+          - mysql_openmrs_database=${MYSQL_OPENMRS_DATABASE}
+          - mysql_motech_database=${MYSQL_MOTECH_DATABASE}
+          - mysql_reporting_database=${MYSQL_REPORTING_DATABASE}
+          - mysql_anm_database=${MYSQL_ANM_DATABASE}
+          - redis_password=${REDIS_PASSWORD}
+          - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
+          - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
+          - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
+          - demo_data_tag=${DEMO_DATA_TAG}
       depends_on:
         - postgres
         - mysql
       volumes:
         - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
         - opensrp_migrations:/etc/migrations
+        - opensrp_tomcat_home:/opt/tomcat
       environment:
         POSTGRES_HOST: postgres
         POSTGRES_PORT: 5432
@@ -74,28 +91,6 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-      args:
-          - opensrp_server_tag=${OPENSRP_SERVER_TAG}
-          - couchdb_username=${COUCHDB_USER}
-          - couchdb_password=${COUCHDB_PASSWORD}
-          - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
-          - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
-          - mysql_opensrp_database=${MYSQL_OPENSRP_DATABASE}
-          - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
-          - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
-          - mysql_openmrs_database=${MYSQL_OPENMRS_DATABASE}
-          - mysql_motech_database=${MYSQL_MOTECH_DATABASE}
-          - mysql_reporting_database=${MYSQL_REPORTING_DATABASE}
-          - mysql_anm_database=${MYSQL_ANM_DATABASE}
-          - redis_password=${REDIS_PASSWORD}
-          - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
-          - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
-          - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
-          - demo_data_tag=${DEMO_DATA_TAG}
-    environment:
-      MYSQL_OPENMRS_DATABASE: ${MYSQL_OPENMRS_DATABASE}
-      MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
-      MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
     depends_on:
       - mysql
       - couchdb
@@ -109,6 +104,7 @@ services:
       - "9091:8081"
     volumes:
         - opensrp_migrations:/etc/migrations
+        - opensrp_tomcat_home:/opt/tomcat
 volumes:
   opensrp_mysql:
   opensrp_couchdb:
@@ -117,3 +113,4 @@ volumes:
   opensrp_postgres_tablespaces:
   opensrp_redis:
   opensrp_migrations:
+  opensrp_tomcat_home:
