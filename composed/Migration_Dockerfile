@@ -38,6 +38,7 @@ COPY sql /opt/sql
 
 #Build arguments
 ARG application_suffix
+ENV APPLICATION_SUFFIX $application_suffix
 #mysql openmrs arguments
 ARG mysql_openmrs_user
 ARG mysql_openmrs_password
