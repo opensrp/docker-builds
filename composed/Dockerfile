@@ -51,6 +51,9 @@ rm -rf /opt/tomcat/webapps/examples && \
 rm -rf /opt/tomcat/webapps/docs && \
 rm -rf /opt/tomcat/webapps/ROOT
 
+#Create openmrs data dir
+RUN mkdir -p /opt/tomcat/.OpenMRS
+
 #split opensrp and openmrs tomcat instances
 RUN mkdir -p /opt/tomcat/instances/opensrp/bin && mkdir -p /opt/tomcat/instances/opensrp/conf && \
 mkdir -p /opt/tomcat/instances/opensrp/webapps && mkdir -p /opt/tomcat/instances/opensrp/logs && \

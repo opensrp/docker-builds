@@ -36,10 +36,6 @@ VOLUME /etc/migrations
 
 COPY sql /opt/sql
 
-#Create opensrp and openmrs webapps dirs
-RUN mkdir -p /opt/tomcat/instances/opensrp/webapps && mkdir -p /opt/tomcat/instances/openmrs/webapps && \
-mkdir -p /opt/tomcat/.OpenMRS
-
 #Build arguments
 ARG application_suffix
 #mysql openmrs arguments
@@ -49,7 +45,7 @@ ARG mysql_openmrs_database
 
 # Download openmrs war and modules
 RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
-mv openmrs.war /opt/tomcat/instances/openmrs/webapps/openmrs${application_suffix}.war
+mv openmrs.war /etc/migrations/openmrs${application_suffix}.war
 
 RUN echo 'connection.username=${mysql_openmrs_user}\n\
 connection.password=${mysql_openmrs_password}\n\
@@ -57,7 +53,7 @@ connection.url=jdbc:mysql://${MYSQL_HOST}:3306/${mysql_openmrs_database}?autoRec
 module.allow_web_admin=true\n\
 auto_update_database=false\n\
 sync.mandatory=false'\
-> /opt/tomcat/.OpenMRS/openmrs${application_suffix}-runtime.properties
+> /etc/migrations/openmrs${application_suffix}-runtime.properties
 
 #Download and configure opensrp server
 #Build arguments
@@ -121,7 +117,7 @@ RUN sed -i -e "/broker.url\s*=/ s/=.*/=tcp:\/\/activemq:61616/"   /tmp/opensrp-s
 
 #compile opensrp war
 RUN mvn clean package -Dmaven.test.skip=true -P postgres -f /tmp/opensrp-server-${opensrp_server_tag}/pom.xml && \
-mv /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /opt/tomcat/instances/opensrp/webapps/opensrp${application_suffix}.war
+mv /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /etc/migrations/opensrp${application_suffix}.war
 
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-migrations.sh"]

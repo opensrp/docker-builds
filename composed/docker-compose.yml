@@ -61,13 +61,13 @@ services:
           - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
           - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
           - demo_data_tag=${DEMO_DATA_TAG}
+          - application_suffix=${APPLICATION_SUFFIX}
       depends_on:
         - postgres
         - mysql
       volumes:
         - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
         - opensrp_migrations:/etc/migrations
-        - opensrp_tomcat_home:/opt/tomcat
       environment:
         POSTGRES_HOST: postgres
         POSTGRES_PORT: 5432
@@ -104,7 +104,6 @@ services:
       - "9091:8081"
     volumes:
         - opensrp_migrations:/etc/migrations
-        - opensrp_tomcat_home:/opt/tomcat
 volumes:
   opensrp_mysql:
   opensrp_couchdb:
