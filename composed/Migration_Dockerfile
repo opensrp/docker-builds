@@ -2,11 +2,12 @@ FROM java:openjdk-8u111-jre
 
 MAINTAINER Samuel Githengi (sgithengi@ona.io)
 
-#Install database clients and netcat
+#Install database clients ,netcat and maven
 RUN apt-get update && \
 apt-get install -y netcat && \
 apt-get install -y mysql-client && \
 apt-get install -y postgresql-client && \
+apt-get install -y maven && \
 rm -rf /var/lib/apt/lists/*
 
 RUN wget --quiet --no-cookies https://github.com/mybatis/migrations/releases/download/mybatis-migrations-3.3.4/mybatis-migrations-3.3.4-bundle.zip -O /opt/mybatis-migrations-3.3.4.zip
@@ -36,7 +37,8 @@ VOLUME /etc/migrations
 COPY sql /opt/sql
 
 #Create opensrp and openmrs webapps dirs
-RUN mkdir -p /opt/tomcat/instances/opensrp/webapps && mkdir -p /opt/tomcat/instances/openmrs/webapps 
+RUN mkdir -p /opt/tomcat/instances/opensrp/webapps && mkdir -p /opt/tomcat/instances/openmrs/webapps &&
+mkdir -p /opt/tomcat/.OpenMRS
 
 #Build arguments
 ARG application_suffix
