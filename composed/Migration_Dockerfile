@@ -1,4 +1,4 @@
-FROM java:openjdk-8u111-jre
+FROM java:openjdk-8u111-jdk
 
 MAINTAINER Samuel Githengi (sgithengi@ona.io)
 
@@ -37,7 +37,7 @@ VOLUME /etc/migrations
 COPY sql /opt/sql
 
 #Create opensrp and openmrs webapps dirs
-RUN mkdir -p /opt/tomcat/instances/opensrp/webapps && mkdir -p /opt/tomcat/instances/openmrs/webapps &&
+RUN mkdir -p /opt/tomcat/instances/opensrp/webapps && mkdir -p /opt/tomcat/instances/openmrs/webapps && \
 mkdir -p /opt/tomcat/.OpenMRS
 
 #Build arguments
@@ -121,7 +121,7 @@ RUN sed -i -e "/broker.url\s*=/ s/=.*/=tcp:\/\/activemq:61616/"   /tmp/opensrp-s
 
 #compile opensrp war
 RUN mvn clean package -Dmaven.test.skip=true -P postgres -f /tmp/opensrp-server-${opensrp_server_tag}/pom.xml && \
-cp /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp${application_suffix}.war /opt/tomcat/instances/opensrp/webapps/
+mv /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /opt/tomcat/instances/opensrp/webapps/opensrp${application_suffix}.war
 
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-migrations.sh"]
