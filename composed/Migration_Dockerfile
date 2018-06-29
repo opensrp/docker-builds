@@ -35,12 +35,27 @@ VOLUME /etc/migrations
 
 COPY sql /opt/sql
 
+#Create opensrp and openmrs webapps dirs
+RUN mkdir -p /opt/tomcat/instances/opensrp/webapps && mkdir -p /opt/tomcat/instances/openmrs/webapps 
+
 #Build arguments
 ARG application_suffix
+#mysql openmrs arguments
+ARG mysql_openmrs_user
+ARG mysql_openmrs_password
+ARG mysql_openmrs_database
 
 # Download openmrs war and modules
-curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
+RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
 mv openmrs.war /opt/tomcat/instances/openmrs/webapps/openmrs${application_suffix}.war
+
+RUN echo 'connection.username=${mysql_openmrs_user}\n\
+connection.password=${mysql_openmrs_password}\n\
+connection.url=jdbc:mysql://${MYSQL_HOST}:3306/${mysql_openmrs_database}?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull\n\
+module.allow_web_admin=true\n\
+auto_update_database=false\n\
+sync.mandatory=false'\
+> /opt/tomcat/.OpenMRS/openmrs${application_suffix}-runtime.properties
 
 #Download and configure opensrp server
 #Build arguments
@@ -62,9 +77,6 @@ ARG couchdb_error_db=opensrp-errortrace
 ARG mysql_opensrp_user
 ARG mysql_opensrp_password
 ARG mysql_opensrp_database
-ARG mysql_openmrs_user
-ARG mysql_openmrs_password
-ARG mysql_openmrs_database
 ARG mysql_motech_database
 ARG mysql_reporting_database
 ARG mysql_anm_database
