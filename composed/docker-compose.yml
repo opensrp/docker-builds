@@ -61,7 +61,7 @@ services:
           - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
           - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
           - demo_data_tag=${DEMO_DATA_TAG}
-          - application_suffix=${APPLICATION_SUFFIX}
+          - application_suffix
       depends_on:
         - postgres
         - mysql
@@ -87,7 +87,7 @@ services:
         MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
         OPENSRP_SERVER_TAG: ${OPENSRP_SERVER_TAG}
         DEMO_DATA_TAG: ${DEMO_DATA_TAG}
-        APPLICATION_SUFFIX: ${APPLICATION_SUFFIX}
+        APPLICATION_SUFFIX: 
   opensrp-composed:
     build:
       context: .
