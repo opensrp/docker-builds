@@ -41,9 +41,19 @@ groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
 
 chown -R postgres:postgres $POSTGRES_OPENSRP_TABLESPACE_DIR
 
+#Test if database already exists
+if psql -lqt | cut -d \| -f 1 | grep -qw $POSTGRES_OPENSRP_DATABASE; then
+	echo "Database $POSTGRES_OPENSRP_DATABASE already created"
+else
+	echo "Creating Database $POSTGRES_OPENSRP_DATABASE"
+	PGPASSWORD=$POSTGRES_OPENSRP_PASSWORD psql -U $POSTGRES_OPENSRP_USER -h $POSTGRES_HOST -c "CREATE DATABASE \"$POSTGRES_OPENSRP_DATABASE\"";
+	PGPASSWORD=$POSTGRES_OPENSRP_PASSWORD psql -U $POSTGRES_OPENSRP_USER -h $POSTGRES_HOST -c "GRANT ALL PRIVILEGES ON DATABASE \"$POSTGRES_OPENSRP_DATABASE\" TO \"$POSTGRES_OPENSRP_USER\"";
+fi
+
 /opt/mybatis-migrations-3.3.4/bin/migrate up --path=/migrate
 
 if [ ! -f /etc/migrations/.postgres_migrations_complete ]; then
+
 	if [[ -n $DEMO_DATA_TAG ]];then
 		wget --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${DEMO_DATA_TAG}/sql/opensrp.sql.gz -O /tmp/opensrp.sql.gz
 		if [[ -f /tmp/opensrp.sql.gz ]]; then
