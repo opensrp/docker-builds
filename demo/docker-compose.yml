@@ -49,19 +49,19 @@ services:
           - couchdb_password=${COUCHDB_PASSWORD}
           - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
           - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
-          - mysql_opensrp_database=${MYSQL_OPENSRP_DATABASE}
+          - mysql_opensrp_database=${ZEIR_MYSQL_OPENSRP_DATABASE}
           - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
           - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
-          - mysql_openmrs_database=${MYSQL_OPENMRS_DATABASE}
-          - mysql_motech_database=${MYSQL_MOTECH_DATABASE}
-          - mysql_reporting_database=${MYSQL_REPORTING_DATABASE}
-          - mysql_anm_database=${MYSQL_ANM_DATABASE}
+          - mysql_openmrs_database=${ZEIR_MYSQL_OPENMRS_DATABASE}
+          - mysql_motech_database=${ZEIR_MYSQL_MOTECH_DATABASE}
+          - mysql_reporting_database=${ZEIR_MYSQL_REPORTING_DATABASE}
+          - mysql_anm_database=${ZEIR_MYSQL_ANM_DATABASE}
           - redis_password=${REDIS_PASSWORD}
           - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
           - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
-          - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
-          - demo_data_tag=${DEMO_DATA_TAG}
-          - application_suffix=-zeir
+          - postgres_opensrp_database=${ZEIR_POSTGRES_OPENSRP_DATABASE}
+          - demo_data_tag=${ZEIR_DEMO_DATA_TAG}
+          - application_suffix=${ZEIR_APPLICATION_SUFFIX}
       depends_on:
         - postgres
         - mysql
@@ -71,22 +71,23 @@ services:
       environment:
         POSTGRES_HOST: postgres
         POSTGRES_PORT: 5432
-        POSTGRES_OPENSRP_DATABASE: ${POSTGRES_OPENSRP_DATABASE}
+        POSTGRES_OPENSRP_DATABASE: ${ZEIR_POSTGRES_OPENSRP_DATABASE}
         POSTGRES_OPENSRP_USER: ${POSTGRES_OPENSRP_USER}
         POSTGRES_OPENSRP_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
         POSTGRES_OPENSRP_TABLESPACE_DIR: ${POSTGRES_OPENSRP_TABLESPACE_DIR}
         MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-        MYSQL_MOTECH_DATABASE: ${MYSQL_MOTECH_DATABASE}
-        MYSQL_REPORTING_DATABASE: ${MYSQL_REPORTING_DATABASE}
+        MYSQL_MOTECH_DATABASE: ${ZEIR_MYSQL_MOTECH_DATABASE}
+        MYSQL_REPORTING_DATABASE: ${ZEIR_MYSQL_REPORTING_DATABASE}
         MYSQL_ANM_DATABASE: ${MYSQL_ANM_DATABASE}
-        MYSQL_OPENMRS_DATABASE: ${MYSQL_OPENMRS_DATABASE}
+        MYSQL_OPENMRS_DATABASE: ${ZEIR_MYSQL_OPENMRS_DATABASE}
         MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
         MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
-        MYSQL_OPENSRP_DATABASE: ${MYSQL_OPENSRP_DATABASE}
+        MYSQL_OPENSRP_DATABASE: ${ZEIR_MYSQL_OPENSRP_DATABASE}
         MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
         MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
         OPENSRP_SERVER_TAG: ${OPENSRP_SERVER_TAG}
-        DEMO_DATA_TAG: zeir
+        DEMO_DATA_TAG: ${ZEIR_DEMO_DATA_TAG}
+        APPLICATION_SUFFIX: ${ZEIR_APPLICATION_SUFFIX}
   tbreach-setup:
       build:
         context: ../composed
@@ -97,19 +98,19 @@ services:
           - couchdb_password=${COUCHDB_PASSWORD}
           - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
           - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
-          - mysql_opensrp_database=${MYSQL_OPENSRP_DATABASE}
+          - mysql_opensrp_database=${TBREACH_MYSQL_OPENSRP_DATABASE}
           - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
           - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
-          - mysql_openmrs_database=${MYSQL_OPENMRS_DATABASE}
-          - mysql_motech_database=${MYSQL_MOTECH_DATABASE}
-          - mysql_reporting_database=${MYSQL_REPORTING_DATABASE}
-          - mysql_anm_database=${MYSQL_ANM_DATABASE}
+          - mysql_openmrs_database=${TBREACH_MYSQL_OPENMRS_DATABASE}
+          - mysql_motech_database=${TBREACH_MYSQL_MOTECH_DATABASE}
+          - mysql_reporting_database=${TBREACH_MYSQL_REPORTING_DATABASE}
+          - mysql_anm_database=${TBREACH_MYSQL_ANM_DATABASE}
           - redis_password=${REDIS_PASSWORD}
           - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
           - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
-          - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
-          - demo_data_tag=${DEMO_DATA_TAG}
-          - application_suffix=-tbreach
+          - postgres_opensrp_database=${TBREACH_POSTGRES_OPENSRP_DATABASE}
+          - demo_data_tag=${TBREACH_DEMO_DATA_TAG}
+          - application_suffix=${TBREACH_APPLICATION_SUFFIX}
       depends_on:
         - postgres
         - mysql
@@ -119,22 +120,22 @@ services:
       environment:
         POSTGRES_HOST: postgres
         POSTGRES_PORT: 5432
-        POSTGRES_OPENSRP_DATABASE: ${POSTGRES_OPENSRP_DATABASE}
+        POSTGRES_OPENSRP_DATABASE: ${TBREACH_POSTGRES_OPENSRP_DATABASE}
         POSTGRES_OPENSRP_USER: ${POSTGRES_OPENSRP_USER}
         POSTGRES_OPENSRP_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
         POSTGRES_OPENSRP_TABLESPACE_DIR: ${POSTGRES_OPENSRP_TABLESPACE_DIR}
         MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-        MYSQL_MOTECH_DATABASE: ${MYSQL_MOTECH_DATABASE}
-        MYSQL_REPORTING_DATABASE: ${MYSQL_REPORTING_DATABASE}
-        MYSQL_ANM_DATABASE: ${MYSQL_ANM_DATABASE}
-        MYSQL_OPENMRS_DATABASE: ${MYSQL_OPENMRS_DATABASE}
+        MYSQL_MOTECH_DATABASE: ${TBREACH_MYSQL_MOTECH_DATABASE}
+        MYSQL_REPORTING_DATABASE: ${TBREACH_MYSQL_REPORTING_DATABASE}
+        MYSQL_ANM_DATABASE: ${TBREACH_MYSQL_ANM_DATABASE}
+        MYSQL_OPENMRS_DATABASE: ${TBREACH_MYSQL_OPENMRS_DATABASE}
         MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
         MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
-        MYSQL_OPENSRP_DATABASE: ${MYSQL_OPENSRP_DATABASE}
+        MYSQL_OPENSRP_DATABASE: ${TBREACH_MYSQL_OPENSRP_DATABASE}
         MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
         MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
-        OPENSRP_SERVER_TAG: ${OPENSRP_SERVER_TAG}
-        DEMO_DATA_TAG: tbreach
+        OPENSRP_SERVER_TAG: ${TBREACH_OPENSRP_SERVER_TAG}
+        DEMO_DATA_TAG: ${TBREACH_APPLICATION_SUFFIX}
   ugandahpv-setup:
       build:
         context: ../composed
@@ -145,19 +146,19 @@ services:
           - couchdb_password=${COUCHDB_PASSWORD}
           - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
           - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
-          - mysql_opensrp_database=${MYSQL_OPENSRP_DATABASE}
+          - mysql_opensrp_database=${HPV_MYSQL_OPENSRP_DATABASE}
           - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
           - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
-          - mysql_openmrs_database=${MYSQL_OPENMRS_DATABASE}
-          - mysql_motech_database=${MYSQL_MOTECH_DATABASE}
-          - mysql_reporting_database=${MYSQL_REPORTING_DATABASE}
-          - mysql_anm_database=${MYSQL_ANM_DATABASE}
+          - mysql_openmrs_database=${HPV_MYSQL_OPENMRS_DATABASE}
+          - mysql_motech_database=${HPV_MYSQL_MOTECH_DATABASE}
+          - mysql_reporting_database=${HPV_MYSQL_REPORTING_DATABASE}
+          - mysql_anm_database=${HPV_MYSQL_ANM_DATABASE}
           - redis_password=${REDIS_PASSWORD}
           - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
           - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
-          - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
-          - demo_data_tag=${DEMO_DATA_TAG}
-          - application_suffix=-uganda-hpv
+          - postgres_opensrp_database=${HPV_POSTGRES_OPENSRP_DATABASE}
+          - demo_data_tag=${HPV_DEMO_DATA_TAG}
+          - application_suffix=${HPV_APPLICATION_SUFFIX}
       depends_on:
         - postgres
         - mysql
@@ -167,22 +168,22 @@ services:
       environment:
         POSTGRES_HOST: postgres
         POSTGRES_PORT: 5432
-        POSTGRES_OPENSRP_DATABASE: ${POSTGRES_OPENSRP_DATABASE}
+        POSTGRES_OPENSRP_DATABASE: ${HPV_POSTGRES_OPENSRP_DATABASE}
         POSTGRES_OPENSRP_USER: ${POSTGRES_OPENSRP_USER}
         POSTGRES_OPENSRP_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
         POSTGRES_OPENSRP_TABLESPACE_DIR: ${POSTGRES_OPENSRP_TABLESPACE_DIR}
         MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-        MYSQL_MOTECH_DATABASE: ${MYSQL_MOTECH_DATABASE}
-        MYSQL_REPORTING_DATABASE: ${MYSQL_REPORTING_DATABASE}
-        MYSQL_ANM_DATABASE: ${MYSQL_ANM_DATABASE}
-        MYSQL_OPENMRS_DATABASE: ${MYSQL_OPENMRS_DATABASE}
+        MYSQL_MOTECH_DATABASE: ${HPV_MYSQL_MOTECH_DATABASE}
+        MYSQL_REPORTING_DATABASE: ${HPV_MYSQL_REPORTING_DATABASE}
+        MYSQL_ANM_DATABASE: ${HPV_MYSQL_ANM_DATABASE}
+        MYSQL_OPENMRS_DATABASE: ${HPV_MYSQL_OPENMRS_DATABASE}
         MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
         MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
-        MYSQL_OPENSRP_DATABASE: ${MYSQL_OPENSRP_DATABASE}
+        MYSQL_OPENSRP_DATABASE: ${HPV_MYSQL_OPENSRP_DATABASE}
         MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
         MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
-        OPENSRP_SERVER_TAG: ${OPENSRP_SERVER_TAG}
-        DEMO_DATA_TAG: uganda-hpv
+        OPENSRP_SERVER_TAG: ${HPV_OPENSRP_SERVER_TAG}
+        DEMO_DATA_TAG: ${HPV_APPLICATION_SUFFIX}
   opensrp-composed:
     build:
       context: ../composed
