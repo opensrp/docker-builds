@@ -22,9 +22,8 @@ if [ ! -f /etc/migrations/.mysql_migrations_complete ]; then
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" -e "CREATE DATABASE $MYSQL_REPORTING_DATABASE /*\!40100 DEFAULT CHARACTER SET utf8 */;"
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" -e "CREATE DATABASE $MYSQL_ANM_DATABASE /*\!40100 DEFAULT CHARACTER SET utf8 */;"
 
-	mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" -e "CREATE USER '$MYSQL_OPENSRP_USER'@'%' IDENTIFIED BY '$MYSQL_OPENSRP_PASSWORD';"
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" -e "GRANT ALL ON \`$MYSQL_OPENMRS_DATABASE\`.* TO '$MYSQL_OPENMRS_USER'@'%' IDENTIFIED BY '$MYSQL_OPENMRS_PASSWORD';"
-	mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" -e "GRANT ALL ON \`$MYSQL_OPENSRP_DATABASE\`.* TO '$MYSQL_OPENSRP_USER'@'%';"
+	mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" -e "GRANT ALL ON \`$MYSQL_OPENSRP_DATABASE\`.* TO '$MYSQL_OPENSRP_USER'@'%' IDENTIFIED BY '$MYSQL_OPENSRP_PASSWORD';"
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" -e "GRANT ALL ON \`$MYSQL_MOTECH_DATABASE\`.* TO '$MYSQL_OPENSRP_USER'@'%' ;"
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" -e "GRANT ALL ON \`$MYSQL_REPORTING_DATABASE\`.* TO '$MYSQL_OPENSRP_USER'@'%' ;"
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" -e "GRANT ALL ON \`$MYSQL_ANM_DATABASE\`.* TO '$MYSQL_OPENSRP_USER'@'%' ;"
@@ -33,7 +32,6 @@ if [ ! -f /etc/migrations/.mysql_migrations_complete ]; then
 	mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" "$MYSQL_MOTECH_DATABASE" < "/opt/sql/tables_quartz_mysql.sql"
 		
 	if [[ -n $DEMO_DATA_TAG ]];then
-		wget --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${DEMO_DATA_TAG}/sql/openmrs.sql.gz -O /tmp/openmrs.sql.gz
 		if [[ -f /tmp/openmrs.sql.gz ]]; then
 			gunzip /tmp/openmrs.sql.gz
 			mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" "$MYSQL_OPENMRS_DATABASE" < "/tmp/openmrs.sql"

@@ -58,7 +58,6 @@ fi
 if [ ! -f /etc/migrations/.postgres_migrations_complete ]; then
 
 	if [[ -n $DEMO_DATA_TAG ]];then
-		wget --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${DEMO_DATA_TAG}/sql/opensrp.sql.gz -O /tmp/opensrp.sql.gz
 		if [[ -f /tmp/opensrp.sql.gz ]]; then
 			gunzip  /tmp/opensrp.sql.gz	
 			PGPASSWORD=$POSTGRES_OPENSRP_PASSWORD psql -U $POSTGRES_OPENSRP_USER -h $POSTGRES_HOST -d $POSTGRES_OPENSRP_DATABASE -a -f /tmp/opensrp.sql
