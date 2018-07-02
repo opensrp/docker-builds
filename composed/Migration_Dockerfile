@@ -114,7 +114,6 @@ mv /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /tmp
 
 
 RUN wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${DEMO_DATA_TAG}/sql/openmrs.sql.gz -O /tmp/openmrs.sql.gz && \
-wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${DEMO_DATA_TAG}/sql/opensrp.sql.gz -O /tmp/opensrp.sql.gz
-
+wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${DEMO_DATA_TAG}/sql/opensrp.sql.gz -O /tmp/opensrp.sql.gz || :
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-migrations.sh"]

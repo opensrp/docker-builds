@@ -57,6 +57,11 @@ fi
 
 if [ ! -f /etc/migrations/.postgres_migrations_complete ]; then
 
+	if [[ -n $APPLICATION_SUFFIX ]];then
+		mkdir -p /etc/migrations/.running/
+		touch /etc/migrations/.running/postgres.${$APPLICATION_SUFFIX}.lock
+	fi
+
 	if [[ -n $DEMO_DATA_TAG ]];then
 		if [[ -f /tmp/opensrp.sql.gz ]]; then
 			gunzip  /tmp/opensrp.sql.gz	
@@ -71,6 +76,8 @@ if [ ! -f /etc/migrations/.postgres_migrations_complete ]; then
 	elif [ ! -d /tmp/opensrp-server-${OPENSRP_SERVER_TAG}/assets/tbreach_default_view_configs ]; then
 		touch  /etc/migrations/.postgres_migrations_complete
 	fi
+
+	rm /etc/migrations/.running/postgres.${$APPLICATION_SUFFIX}.lock
 fi
 
 psql -U postgres -h $POSTGRES_HOST -c "ALTER USER $POSTGRES_OPENSRP_USER WITH NOSUPERUSER";

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while [ ! -f /etc/migrations/.postgres_migrations_complete -o ! -f /etc/migrations/.mysql_migrations_complete ]; 
+while [ ! -f /etc/migrations/.postgres_migrations_complete -o ! -f /etc/migrations/.mysql_migrations_complete -o "$(ls -A /etc/migrations/.running)" ]; 
  do echo 'waiting for database migrations to complete...'; 
  sleep 5; 
 done;
