@@ -42,15 +42,18 @@ groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
 chown -R postgres:postgres $POSTGRES_OPENSRP_TABLESPACE_DIR
 
 #Test if database already exists
-if psql -lqt | cut -d \| -f 1 | grep -qw $POSTGRES_OPENSRP_DATABASE; then
+if psql  -U postgres -h $POSTGRES_HOST -lqt | cut -d \| -f 1 | grep -qw $POSTGRES_OPENSRP_DATABASE ; then
 	echo "Database $POSTGRES_OPENSRP_DATABASE already created"
 else
 	echo "Creating Database $POSTGRES_OPENSRP_DATABASE"
-	PGPASSWORD=$POSTGRES_OPENSRP_PASSWORD psql -U $POSTGRES_OPENSRP_USER -h $POSTGRES_HOST -c "CREATE DATABASE \"$POSTGRES_OPENSRP_DATABASE\"";
-	PGPASSWORD=$POSTGRES_OPENSRP_PASSWORD psql -U $POSTGRES_OPENSRP_USER -h $POSTGRES_HOST -c "GRANT ALL PRIVILEGES ON DATABASE \"$POSTGRES_OPENSRP_DATABASE\" TO \"$POSTGRES_OPENSRP_USER\"";
+	psql -U postgres -h $POSTGRES_HOST -c "CREATE DATABASE \"$POSTGRES_OPENSRP_DATABASE\"";
+	psql -U postgres -h $POSTGRES_HOST -c "CREATE USER \"$POSTGRES_OPENSRP_USER\" WITH SUPERUSER ENCRYPTED PASSWORD '$POSTGRES_OPENSRP_PASSWORD'";
+	psql -U postgres -h $POSTGRES_HOST -c "GRANT ALL PRIVILEGES ON DATABASE \"$POSTGRES_OPENSRP_DATABASE\" TO \"$POSTGRES_OPENSRP_USER\"";
 fi
 
-/opt/mybatis-migrations-3.3.4/bin/migrate up --path=/migrate
+#Run migrations when ignoring errors since tablespace may have been created
+/opt/mybatis-migrations-3.3.4/bin/migrate up --path=/migrate --force
+
 
 if [ ! -f /etc/migrations/.postgres_migrations_complete ]; then
 
@@ -70,3 +73,5 @@ if [ ! -f /etc/migrations/.postgres_migrations_complete ]; then
 		touch  /etc/migrations/.postgres_migrations_complete
 	fi
 fi
+
+psql -U postgres -h $POSTGRES_HOST -c "ALTER USER $POSTGRES_OPENSRP_USER WITH NOSUPERUSER";

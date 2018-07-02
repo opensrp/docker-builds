@@ -6,9 +6,6 @@ services:
       - opensrp_mysql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${MYSQL_OPENMRS_USER}
-      MYSQL_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_OPENMRS_DATABASE}
   couchdb:
     image: "klaemo/couchdb:1.6.1"
     volumes:
@@ -26,10 +23,6 @@ services:
   postgres:
     image: postgres:10.2
     restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_OPENSRP_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_OPENSRP_DATABASE}
     volumes: 
       - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}    
       - opensrp_postgres:/var/lib/postgresql/data
