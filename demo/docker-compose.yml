@@ -37,7 +37,7 @@ services:
         context: ../composed
         dockerfile: ./Migration_Dockerfile
         args:
-          - opensrp_server_tag=${OPENSRP_SERVER_TAG}
+          - opensrp_server_tag=${ZEIR_OPENSRP_SERVER_TAG}
           - couchdb_username=${COUCHDB_USER}
           - couchdb_password=${COUCHDB_PASSWORD}
           - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
@@ -71,14 +71,14 @@ services:
         MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
         MYSQL_MOTECH_DATABASE: ${ZEIR_MYSQL_MOTECH_DATABASE}
         MYSQL_REPORTING_DATABASE: ${ZEIR_MYSQL_REPORTING_DATABASE}
-        MYSQL_ANM_DATABASE: ${MYSQL_ANM_DATABASE}
+        MYSQL_ANM_DATABASE: ${ZEIR_MYSQL_ANM_DATABASE}
         MYSQL_OPENMRS_DATABASE: ${ZEIR_MYSQL_OPENMRS_DATABASE}
         MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
         MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
         MYSQL_OPENSRP_DATABASE: ${ZEIR_MYSQL_OPENSRP_DATABASE}
         MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
         MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
-        OPENSRP_SERVER_TAG: ${OPENSRP_SERVER_TAG}
+        OPENSRP_SERVER_TAG: ${ZEIR_OPENSRP_SERVER_TAG}
         DEMO_DATA_TAG: ${ZEIR_DEMO_DATA_TAG}
         APPLICATION_SUFFIX: ${ZEIR_APPLICATION_SUFFIX}
   tbreach-setup:
@@ -86,7 +86,7 @@ services:
         context: ../composed
         dockerfile: ./Migration_Dockerfile
         args:
-          - opensrp_server_tag=${OPENSRP_SERVER_TAG}
+          - opensrp_server_tag=${TBREACH_OPENSRP_SERVER_TAG}
           - couchdb_username=${COUCHDB_USER}
           - couchdb_password=${COUCHDB_PASSWORD}
           - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
@@ -128,13 +128,13 @@ services:
         MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
         MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
         OPENSRP_SERVER_TAG: ${TBREACH_OPENSRP_SERVER_TAG}
-        DEMO_DATA_TAG: ${TBREACH_APPLICATION_SUFFIX}
+        DEMO_DATA_TAG: ${TBREACH_DEMO_DATA_TAG}
   ugandahpv-setup:
       build:
         context: ../composed
         dockerfile: ./Migration_Dockerfile
         args:
-          - opensrp_server_tag=${OPENSRP_SERVER_TAG}
+          - opensrp_server_tag=${HPV_OPENSRP_SERVER_TAG}
           - couchdb_username=${COUCHDB_USER}
           - couchdb_password=${COUCHDB_PASSWORD}
           - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
@@ -176,7 +176,7 @@ services:
         MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
         MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
         OPENSRP_SERVER_TAG: ${HPV_OPENSRP_SERVER_TAG}
-        DEMO_DATA_TAG: ${HPV_APPLICATION_SUFFIX}
+        DEMO_DATA_TAG: ${HPV_DEMO_DATA_TAG}
   opensrp-composed:
     build:
       context: ../composed
