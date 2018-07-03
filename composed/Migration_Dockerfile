@@ -112,8 +112,9 @@ RUN sed -i -e "/broker.url\s*=/ s/=.*/=tcp:\/\/activemq:61616/"   /tmp/opensrp-s
 RUN mvn clean package -Dmaven.test.skip=true -P postgres -f /tmp/opensrp-server-${opensrp_server_tag}/pom.xml && \
 mv /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /tmp/opensrp${application_suffix}.war
 
+ARG demo_data_tag
 
-RUN wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${DEMO_DATA_TAG}/sql/openmrs.sql.gz -O /tmp/openmrs.sql.gz && \
-wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${DEMO_DATA_TAG}/sql/opensrp.sql.gz -O /tmp/opensrp.sql.gz || :
+RUN wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/sql/openmrs.sql.gz -O /tmp/openmrs.sql.gz && \
+wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/sql/opensrp.sql.gz -O /tmp/opensrp.sql.gz || :
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-migrations.sh"]

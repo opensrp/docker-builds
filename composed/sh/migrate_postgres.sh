@@ -57,9 +57,10 @@ fi
 
 if [ ! -f /etc/migrations/.postgres_migrations_complete ]; then
 
+	mkdir -p /etc/migrations/.running
+	
 	if [[ -n $APPLICATION_SUFFIX ]];then
-		mkdir -p /etc/migrations/.running/
-		touch /etc/migrations/.running/postgres.${$APPLICATION_SUFFIX}.lock
+		touch /etc/migrations/.running/postgres.${APPLICATION_SUFFIX}.lock
 	fi
 
 	if [[ -n $DEMO_DATA_TAG ]];then
@@ -77,7 +78,7 @@ if [ ! -f /etc/migrations/.postgres_migrations_complete ]; then
 		touch  /etc/migrations/.postgres_migrations_complete
 	fi
 
-	rm /etc/migrations/.running/postgres.${$APPLICATION_SUFFIX}.lock
+	rm /etc/migrations/.running/postgres.${APPLICATION_SUFFIX}.lock
 fi
 
 psql -U postgres -h $POSTGRES_HOST -c "ALTER USER $POSTGRES_OPENSRP_USER WITH NOSUPERUSER";
