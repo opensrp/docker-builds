@@ -44,9 +44,31 @@ ARG mysql_openmrs_user
 ARG mysql_openmrs_password
 ARG mysql_openmrs_database
 
-# Download openmrs war and modules
+#Create openmrs data dir
+RUN mkdir /etc/migrations/.OpenMRS${application_suffix}
+COPY files/openmrs_modules/*.omod /etc/migrations/.OpenMRS${application_suffix}/modules/
+
+# Download openmrs
 RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
-mv openmrs.war /tmp/openmrs${application_suffix}.war
+mkdir -p /tmp/openmrs${application_suffix} && mv openmrs.war /tmp/openmrs${application_suffix} && \
+
+
+WORKDIR /tmp/openmrs${application_suffix}
+
+RUN jar -xvf openmrs.war  && rm openmrs.war 
+
+## replace application dir and disable logbackExposeWebAppRoot
+RUN sed -i '46s/.*/<param-value>/opt/tomcat/.OpenMRS${application_suffix}<\/param-value>/' WEB-INF/web.xml && \
+sed -i  '$ d' WEB-INF/web.xml
+
+RUN echo '<context-param>\n\
+ <param-name>log4jExposeWebAppRoot</param-name>\n\
+ <param-value>false</param-value>\n\
+</context-param>
+</web-app>'\
+> WEB-INF/web.xml
+
+RUN jar -cvf /tmp/openmrs${application_suffix}.war * 
 
 #Download and configure opensrp server
 #Build arguments
@@ -89,7 +111,7 @@ RUN sed -i -e "/openmrs.url\s*=/ s/=.*/=${openmrs_url}/" -e "/openmrs.username\s
 
 RUN sed -i -e "/couchdb.server\s*=/ s/=.*/=couchdb/" -e "/couchdb.port\s*=/ s/=.*/=5984/" -e "/couchdb.username\s*=/ s/=.*/=${couchdb_username}/" -e "/couchdb.password\s*=/ s/=.*/=${couchdb_password}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
-RUN sed -i -e "/multimedia.directory.name\s*=/ s/=.*/=\/opt\/tomcat\/\.OpenMRS/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
+RUN sed -i -e "/multimedia.directory.name\s*=/ s/=.*/=\/opt\/tomcat\/${application_suffix}\.OpenMRS/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
 RUN sed -i -e "/jdbc.username\s*=/ s/=.*/=${mysql_opensrp_user}/" -e "/jdbc.password\s*=/ s/=.*/=${mysql_opensrp_password}/" -e "/jdbc.url\s*=/ s/=.*/=${mysql_opensrp_jdbc}/" -e "/jdbc.url-wo-db\s*=/ s/=.*/=${mysql_opensrp_jdbc_wo}/" /tmp/opensrp-server-${opensrp_server_tag}/assets/config/opensrp.properties 
 
@@ -116,5 +138,12 @@ ARG demo_data_tag
 
 RUN wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/sql/openmrs.sql.gz -O /tmp/openmrs.sql.gz && \
 wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/sql/opensrp.sql.gz -O /tmp/opensrp.sql.gz || :
+
+
+#Download images from s3 and save to openmrs images directory
+RUN wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/images/images.tar.gz -O /tmp/images.tar.gz && \
+mkdir -p /etc/migrations/.OpenMRS${application_suffix}/patient_images/ && \
+tar -xf /tmp/images.tar.gz -C /etc/migrations/.OpenMRS${application_suffix}/patient_images && \
+rm /tmp/images.tar.gz || :
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-migrations.sh"]

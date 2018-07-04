@@ -86,11 +86,6 @@ $CATALINA_HOME/bin/catalina.sh run'\
 #change ports for openmrs tomcat
 RUN sed -i -e "s/8005/8006/g" -e "s/8080/8081/g" -e "s/8443/8444/g" -e "s/8009/8010/g" /opt/tomcat/instances/openmrs/conf/server.xml 
 
-#Create openmrs data dir
-RUN mkdir /opt/tomcat/.OpenMRS
-
-COPY files/openmrs_modules/*.omod /opt/tomcat/.OpenMRS/modules/
-
 ENV CATALINA_HOME /opt/tomcat
 
 ENV PATH $PATH:$CATALINA_HOME/bin
@@ -103,15 +98,6 @@ RUN chown -R tomcat:tomcat /opt/tomcat
 # Copying files
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-COPY sh/*.sh /usr/local/bin/
-
-#Download images from s3 and save to openmrs images directory
-ARG demo_data_tag
-
-RUN wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/images/images.tar.gz -O /tmp/images.tar.gz && \
-mkdir -p /opt/tomcat/.OpenMRS/patient_images/ && \
-tar -xf /tmp/images.tar.gz -C /opt/tomcat/.OpenMRS/patient_images && \
-rm /tmp/images.tar.gz || :
-  
+COPY sh/*.sh /usr/local/bin/  
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]
