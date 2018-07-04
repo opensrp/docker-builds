@@ -10,14 +10,15 @@ if [ -f /tmp/openmrs${APPLICATION_SUFFIX}.war ]; then
 	echo "Shared openmrs war to runtime container"
 fi
 
+if [ -f /tmp/.OpenMRS${APPLICATION_SUFFIX} ]; then
+	mv /tmp/.OpenMRS${APPLICATION_SUFFIX} /etc/migrations 
+	echo "Shared openmrs data directory to runtime container"
+fi
+
 MYSQL_HOST=mysql
 
 # create openmrs properties file
 echo "Creating openmrs properties file"
-
-if [ ! -d /etc/migrations/.OpenMRS${APPLICATION_SUFFIX} ]; then
-	mkdir -p /etc/migrations/.OpenMRS${APPLICATION_SUFFIX}
-fi
 
 if [ ! -f /etc/migrations/.OpenMRS${APPLICATION_SUFFIX}/openmrs${APPLICATION_SUFFIX}-runtime.properties ]; then
 	cat > /etc/migrations/.OpenMRS${APPLICATION_SUFFIX}/openmrs${APPLICATION_SUFFIX}-runtime.properties <<- EOF

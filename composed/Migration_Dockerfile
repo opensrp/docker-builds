@@ -45,30 +45,35 @@ ARG mysql_openmrs_password
 ARG mysql_openmrs_database
 
 #Create openmrs data dir
-RUN mkdir /etc/migrations/.OpenMRS${application_suffix}
-COPY files/openmrs_modules/*.omod /etc/migrations/.OpenMRS${application_suffix}/modules/
+RUN mkdir /tmp/.OpenMRS${application_suffix}
+COPY files/openmrs_modules/*.omod /tmp/.OpenMRS${application_suffix}/modules/
 
 # Download openmrs
 RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
-mkdir -p /tmp/openmrs${application_suffix} && mv openmrs.war /tmp/openmrs${application_suffix} && \
+mkdir -p /tmp/openmrs${application_suffix} && mv openmrs.war /tmp/openmrs${application_suffix} 
 
-
+#change dir since extraction using jar does not support different output directory
 WORKDIR /tmp/openmrs${application_suffix}
 
-RUN jar -xvf openmrs.war  && rm openmrs.war 
+RUN jar -xf openmrs.war  && rm openmrs.war 
 
-## replace application dir and disable logbackExposeWebAppRoot
-RUN sed -i '46s/.*/<param-value>/opt/tomcat/.OpenMRS${application_suffix}<\/param-value>/' WEB-INF/web.xml && \
-sed -i  '$ d' WEB-INF/web.xml
+## Replace openmrs data application dir param value(on web.xml line 46) 
+RUN sed -i  "46s/.*/<param-value>\/opt\/tomcat\/.OpenMRS${application_suffix}\/<\/param-value>/" WEB-INF/web.xml
 
-RUN echo '<context-param>\n\
+
+#Disable logbackExposeWebAppRoot because of running several openmrs instances on one server
+RUN sed -i  '$ d' WEB-INF/web.xml && \
+echo '<context-param>\n\
  <param-name>log4jExposeWebAppRoot</param-name>\n\
  <param-value>false</param-value>\n\
-</context-param>
+</context-param>\n\
 </web-app>'\
-> WEB-INF/web.xml
+>> WEB-INF/web.xml
 
-RUN jar -cvf /tmp/openmrs${application_suffix}.war * 
+RUN jar -cf /tmp/openmrs${application_suffix}.war * 
+
+#Reset working dir
+WORKDIR /
 
 #Download and configure opensrp server
 #Build arguments
@@ -142,8 +147,8 @@ wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/
 
 #Download images from s3 and save to openmrs images directory
 RUN wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/images/images.tar.gz -O /tmp/images.tar.gz && \
-mkdir -p /etc/migrations/.OpenMRS${application_suffix}/patient_images/ && \
-tar -xf /tmp/images.tar.gz -C /etc/migrations/.OpenMRS${application_suffix}/patient_images && \
+mkdir -p /tmp/.OpenMRS${application_suffix}/patient_images/ && \
+tar -xf /tmp/images.tar.gz -C /tmp/.OpenMRS${application_suffix}/patient_images && \
 rm /tmp/images.tar.gz || :
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-migrations.sh"]
