@@ -10,7 +10,7 @@ if [ -f /tmp/openmrs${APPLICATION_SUFFIX}.war ]; then
 	echo "Shared openmrs war to runtime container"
 fi
 
-if [ -f /tmp/.OpenMRS${APPLICATION_SUFFIX} ]; then
+if [ -d /tmp/.OpenMRS${APPLICATION_SUFFIX} ]; then
 	mv /tmp/.OpenMRS${APPLICATION_SUFFIX} /etc/migrations 
 	echo "Shared openmrs data directory to runtime container"
 fi

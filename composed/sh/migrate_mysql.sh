@@ -58,3 +58,7 @@ if [ ! -f /etc/migrations/.mysql_migrations_complete ]; then
 	rm /etc/migrations/.running/mysql.${APPLICATION_SUFFIX}.lock
 
 fi
+
+if [[ -n $MYSQL_MAX_CONNECTIONS ]];then
+	mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h "$MYSQL_HOST" -e "set global max_connections = $MYSQL_MAX_CONNECTIONS;"
+fi
