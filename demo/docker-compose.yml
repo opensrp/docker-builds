@@ -1,0 +1,211 @@
+version: '2'
+services:
+  mysql:
+    image: "mysql:5.6"
+    volumes:
+      - opensrp_mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  couchdb:
+    image: "klaemo/couchdb:1.6.1"
+    volumes:
+      - opensrp_couchdb:/usr/local/var/lib/couchdb
+    environment:
+      COUCHDB_USER: ${COUCHDB_USER}
+      COUCHDB_PASSWORD: ${COUCHDB_PASSWORD}
+  couchdb-lucene:
+    image: "klaemo/couchdb-lucene"
+    volumes:
+      - opensrp_couchdb_lucene:/opt/couchdb-lucene/indexes
+    entrypoint: /bin/bash -c 'chown -R couchdb:couchdb /opt/couchdb-lucene; sleep 1; gosu couchdb /opt/couchdb-lucene/bin/run'
+  activemq:
+    image: "rmohr/activemq:5.11.1"
+  postgres:
+    image: postgres:10.2
+    restart: always
+    volumes: 
+      - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}    
+      - opensrp_postgres:/var/lib/postgresql/data
+  redis:
+      image: redis:4.0.9
+      command: 
+          --requirepass ${REDIS_PASSWORD}
+      volumes:
+        - opensrp_redis:/data
+  zeir-setup:
+      build:
+        context: ../composed
+        dockerfile: ./Migration_Dockerfile
+        args:
+          - opensrp_server_tag=${ZEIR_OPENSRP_SERVER_TAG}
+          - couchdb_username=${COUCHDB_USER}
+          - couchdb_password=${COUCHDB_PASSWORD}
+          - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
+          - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
+          - mysql_opensrp_database=${ZEIR_MYSQL_OPENSRP_DATABASE}
+          - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
+          - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
+          - mysql_openmrs_database=${ZEIR_MYSQL_OPENMRS_DATABASE}
+          - mysql_motech_database=${ZEIR_MYSQL_MOTECH_DATABASE}
+          - mysql_reporting_database=${ZEIR_MYSQL_REPORTING_DATABASE}
+          - mysql_anm_database=${ZEIR_MYSQL_ANM_DATABASE}
+          - redis_password=${REDIS_PASSWORD}
+          - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
+          - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
+          - postgres_opensrp_database=${ZEIR_POSTGRES_OPENSRP_DATABASE}
+          - demo_data_tag=${ZEIR_DEMO_DATA_TAG}
+          - application_suffix=${ZEIR_APPLICATION_SUFFIX}
+      depends_on:
+        - postgres
+        - mysql
+      volumes:
+        - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        - opensrp_migrations:/etc/migrations
+      environment:
+        POSTGRES_HOST: postgres
+        POSTGRES_PORT: 5432
+        POSTGRES_OPENSRP_DATABASE: ${ZEIR_POSTGRES_OPENSRP_DATABASE}
+        POSTGRES_OPENSRP_USER: ${POSTGRES_OPENSRP_USER}
+        POSTGRES_OPENSRP_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
+        POSTGRES_OPENSRP_TABLESPACE_DIR: ${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_MOTECH_DATABASE: ${ZEIR_MYSQL_MOTECH_DATABASE}
+        MYSQL_REPORTING_DATABASE: ${ZEIR_MYSQL_REPORTING_DATABASE}
+        MYSQL_ANM_DATABASE: ${ZEIR_MYSQL_ANM_DATABASE}
+        MYSQL_OPENMRS_DATABASE: ${ZEIR_MYSQL_OPENMRS_DATABASE}
+        MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
+        MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
+        MYSQL_OPENSRP_DATABASE: ${ZEIR_MYSQL_OPENSRP_DATABASE}
+        MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
+        MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
+        OPENSRP_SERVER_TAG: ${ZEIR_OPENSRP_SERVER_TAG}
+        DEMO_DATA_TAG: ${ZEIR_DEMO_DATA_TAG}
+        APPLICATION_SUFFIX: ${ZEIR_APPLICATION_SUFFIX}
+  tbreach-setup:
+      build:
+        context: ../composed
+        dockerfile: ./Migration_Dockerfile
+        args:
+          - opensrp_server_tag=${TBREACH_OPENSRP_SERVER_TAG}
+          - couchdb_username=${COUCHDB_USER}
+          - couchdb_password=${COUCHDB_PASSWORD}
+          - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
+          - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
+          - mysql_opensrp_database=${TBREACH_MYSQL_OPENSRP_DATABASE}
+          - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
+          - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
+          - mysql_openmrs_database=${TBREACH_MYSQL_OPENMRS_DATABASE}
+          - mysql_motech_database=${TBREACH_MYSQL_MOTECH_DATABASE}
+          - mysql_reporting_database=${TBREACH_MYSQL_REPORTING_DATABASE}
+          - mysql_anm_database=${TBREACH_MYSQL_ANM_DATABASE}
+          - redis_password=${REDIS_PASSWORD}
+          - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
+          - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
+          - postgres_opensrp_database=${TBREACH_POSTGRES_OPENSRP_DATABASE}
+          - demo_data_tag=${TBREACH_DEMO_DATA_TAG}
+          - application_suffix=${TBREACH_APPLICATION_SUFFIX}
+      depends_on:
+        - postgres
+        - mysql
+      volumes:
+        - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        - opensrp_migrations:/etc/migrations
+      environment:
+        POSTGRES_HOST: postgres
+        POSTGRES_PORT: 5432
+        POSTGRES_OPENSRP_DATABASE: ${TBREACH_POSTGRES_OPENSRP_DATABASE}
+        POSTGRES_OPENSRP_USER: ${POSTGRES_OPENSRP_USER}
+        POSTGRES_OPENSRP_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
+        POSTGRES_OPENSRP_TABLESPACE_DIR: ${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_MOTECH_DATABASE: ${TBREACH_MYSQL_MOTECH_DATABASE}
+        MYSQL_REPORTING_DATABASE: ${TBREACH_MYSQL_REPORTING_DATABASE}
+        MYSQL_ANM_DATABASE: ${TBREACH_MYSQL_ANM_DATABASE}
+        MYSQL_OPENMRS_DATABASE: ${TBREACH_MYSQL_OPENMRS_DATABASE}
+        MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
+        MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
+        MYSQL_OPENSRP_DATABASE: ${TBREACH_MYSQL_OPENSRP_DATABASE}
+        MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
+        MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
+        OPENSRP_SERVER_TAG: ${TBREACH_OPENSRP_SERVER_TAG}
+        DEMO_DATA_TAG: ${TBREACH_DEMO_DATA_TAG}
+  ugandahpv-setup:
+      build:
+        context: ../composed
+        dockerfile: ./Migration_Dockerfile
+        args:
+          - opensrp_server_tag=${HPV_OPENSRP_SERVER_TAG}
+          - couchdb_username=${COUCHDB_USER}
+          - couchdb_password=${COUCHDB_PASSWORD}
+          - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
+          - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
+          - mysql_opensrp_database=${HPV_MYSQL_OPENSRP_DATABASE}
+          - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
+          - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
+          - mysql_openmrs_database=${HPV_MYSQL_OPENMRS_DATABASE}
+          - mysql_motech_database=${HPV_MYSQL_MOTECH_DATABASE}
+          - mysql_reporting_database=${HPV_MYSQL_REPORTING_DATABASE}
+          - mysql_anm_database=${HPV_MYSQL_ANM_DATABASE}
+          - redis_password=${REDIS_PASSWORD}
+          - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
+          - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
+          - postgres_opensrp_database=${HPV_POSTGRES_OPENSRP_DATABASE}
+          - demo_data_tag=${HPV_DEMO_DATA_TAG}
+          - application_suffix=${HPV_APPLICATION_SUFFIX}
+      depends_on:
+        - postgres
+        - mysql
+      volumes:
+        - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        - opensrp_migrations:/etc/migrations
+      environment:
+        POSTGRES_HOST: postgres
+        POSTGRES_PORT: 5432
+        POSTGRES_OPENSRP_DATABASE: ${HPV_POSTGRES_OPENSRP_DATABASE}
+        POSTGRES_OPENSRP_USER: ${POSTGRES_OPENSRP_USER}
+        POSTGRES_OPENSRP_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
+        POSTGRES_OPENSRP_TABLESPACE_DIR: ${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_MOTECH_DATABASE: ${HPV_MYSQL_MOTECH_DATABASE}
+        MYSQL_REPORTING_DATABASE: ${HPV_MYSQL_REPORTING_DATABASE}
+        MYSQL_ANM_DATABASE: ${HPV_MYSQL_ANM_DATABASE}
+        MYSQL_OPENMRS_DATABASE: ${HPV_MYSQL_OPENMRS_DATABASE}
+        MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
+        MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
+        MYSQL_OPENSRP_DATABASE: ${HPV_MYSQL_OPENSRP_DATABASE}
+        MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
+        MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
+        MYSQL_MAX_CONNECTIONS: ${MYSQL_MAX_CONNECTIONS}
+        OPENSRP_SERVER_TAG: ${HPV_OPENSRP_SERVER_TAG}
+        DEMO_DATA_TAG: ${HPV_DEMO_DATA_TAG}
+  opensrp-composed:
+    build:
+      context: ../composed
+      dockerfile: ./Dockerfile
+      args:
+        - catalina_opts=${CATALINA_OPTS}
+    depends_on:
+      - mysql
+      - couchdb
+      - couchdb-lucene
+      - activemq
+      - postgres
+      - redis
+      - zeir-setup
+      - tbreach-setup
+      - ugandahpv-setup
+    ports:
+      - "9090:8080"
+      - "9091:8081"
+    volumes:
+        - opensrp_migrations:/etc/migrations
+    environment:
+      CATALINA_OPTS: ${CATALINA_OPTS}
+volumes:
+  opensrp_mysql:
+  opensrp_couchdb:
+  opensrp_couchdb_lucene:
+  opensrp_postgres:
+  opensrp_postgres_tablespaces:
+  opensrp_redis:
+  opensrp_migrations:

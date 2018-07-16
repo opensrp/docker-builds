@@ -45,6 +45,23 @@ services:
         dockerfile: ./Migration_Dockerfile
         args:
           - opensrp_server_tag=${OPENSRP_SERVER_TAG}
+          - couchdb_username=${COUCHDB_USER}
+          - couchdb_password=${COUCHDB_PASSWORD}
+          - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
+          - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
+          - mysql_opensrp_database=${MYSQL_OPENSRP_DATABASE}
+          - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
+          - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
+          - mysql_openmrs_database=${MYSQL_OPENMRS_DATABASE}
+          - mysql_motech_database=${MYSQL_MOTECH_DATABASE}
+          - mysql_reporting_database=${MYSQL_REPORTING_DATABASE}
+          - mysql_anm_database=${MYSQL_ANM_DATABASE}
+          - redis_password=${REDIS_PASSWORD}
+          - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
+          - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
+          - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
+          - demo_data_tag=${DEMO_DATA_TAG}
+          - application_suffix
       depends_on:
         - postgres
         - mysql
@@ -69,33 +86,11 @@ services:
         MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
         MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
         OPENSRP_SERVER_TAG: ${OPENSRP_SERVER_TAG}
-        DEMO_DATA_TAG: ${DEMO_DATA_TAG}
+        DEMO_DATA_TAG: ${DEMO_DATA_TAG} 
   opensrp-composed:
     build:
       context: .
       dockerfile: ./Dockerfile
-      args:
-          - opensrp_server_tag=${OPENSRP_SERVER_TAG}
-          - couchdb_username=${COUCHDB_USER}
-          - couchdb_password=${COUCHDB_PASSWORD}
-          - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
-          - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
-          - mysql_opensrp_database=${MYSQL_OPENSRP_DATABASE}
-          - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
-          - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
-          - mysql_openmrs_database=${MYSQL_OPENMRS_DATABASE}
-          - mysql_motech_database=${MYSQL_MOTECH_DATABASE}
-          - mysql_reporting_database=${MYSQL_REPORTING_DATABASE}
-          - mysql_anm_database=${MYSQL_ANM_DATABASE}
-          - redis_password=${REDIS_PASSWORD}
-          - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
-          - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
-          - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
-          - demo_data_tag=${DEMO_DATA_TAG}
-    environment:
-      MYSQL_OPENMRS_DATABASE: ${MYSQL_OPENMRS_DATABASE}
-      MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
-      MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
     depends_on:
       - mysql
       - couchdb
