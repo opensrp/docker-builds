@@ -151,4 +151,6 @@ mkdir -p /tmp/.OpenMRS${application_suffix}/patient_images/ && \
 tar -xf /tmp/images.tar.gz -C /tmp/.OpenMRS${application_suffix}/patient_images && \
 rm /tmp/images.tar.gz || :
 
+RUN  chmod 777 /tmp/*.war 
+
 ENTRYPOINT ["/usr/local/bin/entrypoint-migrations.sh"]
