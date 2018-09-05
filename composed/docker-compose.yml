@@ -100,8 +100,8 @@ services:
       - migrations
       - redis
     ports:
-      - "9090:8080"
-      - "9091:8081"
+      - "9095:8050"
+      - "9096:8051"
     volumes:
         - opensrp_migrations:/etc/migrations
 volumes:
