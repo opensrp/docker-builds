@@ -19,6 +19,7 @@ RUN chmod +x /opt/mybatis-migrations-3.3.4/bin/migrate
 
 WORKDIR /migrate
 
+
 # Add command scripts
 COPY sh/*.sh /usr/local/bin/
 
@@ -38,7 +39,11 @@ COPY sql /opt/sql
 
 #Build arguments
 ARG application_suffix
+ARG openmrs_version
+ARG openmrs_modules_version
 ENV APPLICATION_SUFFIX $application_suffix
+ENV OPENMRS_VERSION $openmrs_version
+ENV OPENMRS_MODULES_VERSION $openmrs_modules_version
 #mysql openmrs arguments
 ARG mysql_openmrs_user
 ARG mysql_openmrs_password
@@ -46,16 +51,18 @@ ARG mysql_openmrs_database
 
 #Create openmrs data dir
 RUN mkdir /tmp/.OpenMRS${application_suffix}
-COPY files/openmrs_modules/*.omod /tmp/.OpenMRS${application_suffix}/modules/
+COPY files/openmrs_modules_v${openmrs_modules_version}/*.omod /tmp/.OpenMRS${application_suffix}/modules/
+COPY files/owa.zip  /tmp/.OpenMRS${application_suffix}/
+RUN unzip -o /tmp/.OpenMRS${application_suffix}/owa.zip && rm /tmp/.OpenMRS${application_suffix}/owa.zip
 
 # Download openmrs
-RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
+RUN curl -O https://netcologne.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_${openmrs_version}/openmrs.war && \
 mkdir -p /tmp/openmrs${application_suffix} && mv openmrs.war /tmp/openmrs${application_suffix} 
 
 #change dir since extraction using jar does not support different output directory
 WORKDIR /tmp/openmrs${application_suffix}
 
-RUN jar -xf openmrs.war  && rm openmrs.war 
+RUN unzip openmrs.war  && rm openmrs.war
 
 ## Replace openmrs data application dir param value(on web.xml line 46) 
 RUN sed -i  "46s/.*/<param-value>\/opt\/tomcat\/.OpenMRS${application_suffix}\/<\/param-value>/" WEB-INF/web.xml
@@ -141,7 +148,7 @@ mv /tmp/opensrp-server-${opensrp_server_tag}/opensrp-web/target/opensrp.war /tmp
 
 ARG demo_data_tag
 
-RUN wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/sql/openmrs.sql.gz -O /tmp/openmrs.sql.gz && \
+RUN wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/sql/openmrs_v${openmrs_modules_version}/openmrs.sql.gz -O /tmp/openmrs.sql.gz && \
 wget --content-on-error --quiet --no-cookies https://s3-eu-west-1.amazonaws.com/opensrp-stage/demo/${demo_data_tag}/sql/opensrp.sql.gz -O /tmp/opensrp.sql.gz || :
 
 

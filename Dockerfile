@@ -418,6 +418,11 @@ chmod +x /opt/tomcat/instances/opensrp/bin/start_opensrp.sh  &&  chmod +x /opt/t
 ARG catalina_opts="-server -Xms512m -Xmx1024m" 
 ENV CATALINA_OPTS $catalina_opts
 
+ARG openmrs_modules_version
+ARG openmrs_version
+ENV OPENMRS_VERSION $openmrs_version
+ENV OPENMRS_MODULES_VERSION $openmrs_modules_version
+
 RUN echo '#!/bin/sh\n\
 CATALINA_HOME=/opt/tomcat\n\
 CATALINA_BASE=/opt/tomcat/instances/opensrp\n\
@@ -436,11 +441,13 @@ $CATALINA_HOME/bin/catalina.sh run'\
 RUN sed -i -e "s/8005/8006/g" -e "s/8080/8081/g" -e "s/8443/8444/g" -e "s/8009/8010/g" /opt/tomcat/instances/openmrs/conf/server.xml 
 
 # Download openmrs war and modules
-RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_1.11.5/openmrs.war && \
+RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_${$openmrs_version}/openmrs.war && \
 mv openmrs.war /opt/tomcat/instances/openmrs/webapps && \
 mkdir /opt/tomcat/.OpenMRS 
 
-COPY composed/files/openmrs_modules/*.omod /opt/tomcat/.OpenMRS/modules/
+COPY composed/files/openmrs_modules_v${openmrs_modules_version}/*.omod /opt/tomcat/.OpenMRS/modules/
+COPY composed/files/owa.zip  /opt/tomcat/.OpenMRS/
+RUN unzip -o /opt/tomcat/.OpenMRS/owa.zip && rm /opt/tomcat/.OpenMRS/owa.zip
 
 ENV CATALINA_HOME /opt/tomcat
 

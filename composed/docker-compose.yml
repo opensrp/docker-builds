@@ -62,6 +62,8 @@ services:
           - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
           - demo_data_tag=${DEMO_DATA_TAG}
           - application_suffix
+          - openmrs_version=${OPENMRS_VERSION}
+          - openmrs_modules_version=${OPENMRS_MODULES_VERSION}
       depends_on:
         - postgres
         - mysql
@@ -86,7 +88,9 @@ services:
         MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
         MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
         OPENSRP_SERVER_TAG: ${OPENSRP_SERVER_TAG}
-        DEMO_DATA_TAG: ${DEMO_DATA_TAG} 
+        DEMO_DATA_TAG: ${DEMO_DATA_TAG}
+        OPENMRS_VERSION: ${ZEIR_OPENMRS_SERVER_VERSION}
+        OPENMRS_MODULES_VERSION: ${OPENMRS_MODULES_VERSION}
   opensrp-composed:
     build:
       context: .
@@ -100,8 +104,8 @@ services:
       - migrations
       - redis
     ports:
-      - "9095:8050"
-      - "9096:8051"
+      - "9090:8080"
+      - "9091:8081"
     volumes:
         - opensrp_migrations:/etc/migrations
 volumes:
