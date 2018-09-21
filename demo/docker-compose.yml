@@ -100,8 +100,8 @@ services:
       - redis
       - zeir-setup
     ports:
-      - "9090:8080"
-      - "9091:8081"
+      - "9190:8180"
+      - "9191:8181"
     volumes:
         - opensrp_migrations:/etc/migrations
     environment:

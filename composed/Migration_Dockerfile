@@ -53,11 +53,11 @@ ARG mysql_openmrs_database
 RUN mkdir /tmp/.OpenMRS${application_suffix}
 COPY files/openmrs_modules_v${openmrs_modules_version}/*.omod /tmp/.OpenMRS${application_suffix}/modules/
 COPY files/owa.zip  /tmp/.OpenMRS${application_suffix}/
-RUN unzip -o /tmp/.OpenMRS${application_suffix}/owa.zip && rm /tmp/.OpenMRS${application_suffix}/owa.zip
+RUN unzip -o /tmp/.OpenMRS${application_suffix}/owa.zip -d /tmp/.OpenMRS${application_suffix}/
 
 # Download openmrs
-RUN curl -O https://netcologne.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_${openmrs_version}/openmrs.war && \
-mkdir -p /tmp/openmrs${application_suffix} && mv openmrs.war /tmp/openmrs${application_suffix} 
+RUN mkdir -p /tmp/openmrs${application_suffix} 
+COPY files/openmrs.war /tmp/openmrs${application_suffix} 
 
 #change dir since extraction using jar does not support different output directory
 WORKDIR /tmp/openmrs${application_suffix}

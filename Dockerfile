@@ -438,22 +438,21 @@ $CATALINA_HOME/bin/catalina.sh run'\
 > /opt/tomcat/instances/openmrs/bin/start_openmrs.sh
 
 #change ports for openmrs tomcat
-RUN sed -i -e "s/8005/8006/g" -e "s/8080/8081/g" -e "s/8443/8444/g" -e "s/8009/8010/g" /opt/tomcat/instances/openmrs/conf/server.xml 
+RUN sed -i -e "s/8005/8006/g" -e "s/8180/8181/g" -e "s/8443/8444/g" -e "s/8009/8010/g" /opt/tomcat/instances/openmrs/conf/server.xml 
 
 # Download openmrs war and modules
-RUN curl -O http://liquidtelecom.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_${$openmrs_version}/openmrs.war && \
-mv openmrs.war /opt/tomcat/instances/openmrs/webapps && \
+COPY composed/files/openmrs.war /opt/tomcat/instances/openmrs/webapps && \
 mkdir /opt/tomcat/.OpenMRS 
 
 COPY composed/files/openmrs_modules_v${openmrs_modules_version}/*.omod /opt/tomcat/.OpenMRS/modules/
 COPY composed/files/owa.zip  /opt/tomcat/.OpenMRS/
-RUN unzip -o /opt/tomcat/.OpenMRS/owa.zip && rm /opt/tomcat/.OpenMRS/owa.zip
+RUN unzip -o /opt/tomcat/.OpenMRS/owa.zip -d /opt/tomcat/.OpenMRS/
 
 ENV CATALINA_HOME /opt/tomcat
 
 ENV PATH $PATH:$CATALINA_HOME/bin
 
-EXPOSE 8080 8081
+EXPOSE 8180 8181
 
 #update tomcat permissions
 RUN chown -R tomcat:tomcat /opt/tomcat
