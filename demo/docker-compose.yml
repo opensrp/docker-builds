@@ -56,7 +56,7 @@ services:
           - demo_data_tag=${ZEIR_DEMO_DATA_TAG}
           - application_suffix=${ZEIR_APPLICATION_SUFFIX}
           - openmrs_version=${ZEIR_OPENMRS_SERVER_VERSION}
-          - openmrs_modules_version=${ZEIR_OPENMRS_MODULES_VERSION}
+          - openmrs_modules_version=${ZEIR_OPENMRS_MODULES_VERSION}          
       depends_on:
         - postgres
         - mysql
@@ -84,7 +84,112 @@ services:
         DEMO_DATA_TAG: ${ZEIR_DEMO_DATA_TAG}
         APPLICATION_SUFFIX: ${ZEIR_APPLICATION_SUFFIX}
         OPENMRS_VERSION: ${ZEIR_OPENMRS_SERVER_VERSION}
-        OPENMRS_MODULES_VERSION: ${ZEIR_OPENMRS_MODULES_VERSION}
+        OPENMRS_MODULES_VERSION: ${ZEIR_OPENMRS_MODULES_VERSION}        
+  tbreach-setup:
+      build:
+        context: ../composed
+        dockerfile: ./Migration_Dockerfile
+        args:
+          - opensrp_server_tag=${TBREACH_OPENSRP_SERVER_TAG}
+          - couchdb_username=${COUCHDB_USER}
+          - couchdb_password=${COUCHDB_PASSWORD}
+          - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
+          - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
+          - mysql_opensrp_database=${TBREACH_MYSQL_OPENSRP_DATABASE}
+          - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
+          - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
+          - mysql_openmrs_database=${TBREACH_MYSQL_OPENMRS_DATABASE}
+          - mysql_motech_database=${TBREACH_MYSQL_MOTECH_DATABASE}
+          - mysql_reporting_database=${TBREACH_MYSQL_REPORTING_DATABASE}
+          - mysql_anm_database=${TBREACH_MYSQL_ANM_DATABASE}
+          - redis_password=${REDIS_PASSWORD}
+          - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
+          - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
+          - postgres_opensrp_database=${TBREACH_POSTGRES_OPENSRP_DATABASE}
+          - demo_data_tag=${TBREACH_DEMO_DATA_TAG}
+          - application_suffix=${TBREACH_APPLICATION_SUFFIX}
+          - openmrs_version=${TBREACH_OPENMRS_SERVER_VERSION}
+          - openmrs_modules_version=${TBREACH_OPENMRS_MODULES_VERSION}          
+      depends_on:
+        - postgres
+        - mysql
+      volumes:
+        - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        - opensrp_migrations:/etc/migrations
+      environment:
+        POSTGRES_HOST: postgres
+        POSTGRES_PORT: 5432
+        POSTGRES_OPENSRP_DATABASE: ${TBREACH_POSTGRES_OPENSRP_DATABASE}
+        POSTGRES_OPENSRP_USER: ${POSTGRES_OPENSRP_USER}
+        POSTGRES_OPENSRP_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
+        POSTGRES_OPENSRP_TABLESPACE_DIR: ${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_MOTECH_DATABASE: ${TBREACH_MYSQL_MOTECH_DATABASE}
+        MYSQL_REPORTING_DATABASE: ${TBREACH_MYSQL_REPORTING_DATABASE}
+        MYSQL_ANM_DATABASE: ${TBREACH_MYSQL_ANM_DATABASE}
+        MYSQL_OPENMRS_DATABASE: ${TBREACH_MYSQL_OPENMRS_DATABASE}
+        MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
+        MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
+        MYSQL_OPENSRP_DATABASE: ${TBREACH_MYSQL_OPENSRP_DATABASE}
+        MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
+        MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
+        OPENSRP_SERVER_TAG: ${TBREACH_OPENSRP_SERVER_TAG}
+        DEMO_DATA_TAG: ${TBREACH_DEMO_DATA_TAG}
+        OPENMRS_VERSION: ${TBREACH_OPENMRS_SERVER_VERSION}
+        OPENMRS_MODULES_VERSION: ${TBREACH_OPENMRS_MODULES_VERSION}          
+  ugandahpv-setup:
+      build:
+        context: ../composed
+        dockerfile: ./Migration_Dockerfile
+        args:
+          - opensrp_server_tag=${HPV_OPENSRP_SERVER_TAG}
+          - couchdb_username=${COUCHDB_USER}
+          - couchdb_password=${COUCHDB_PASSWORD}
+          - mysql_opensrp_user=${MYSQL_OPENSRP_USER}
+          - mysql_opensrp_password=${MYSQL_OPENSRP_PASSWORD}
+          - mysql_opensrp_database=${HPV_MYSQL_OPENSRP_DATABASE}
+          - mysql_openmrs_user=${MYSQL_OPENMRS_USER}
+          - mysql_openmrs_password=${MYSQL_OPENMRS_PASSWORD}
+          - mysql_openmrs_database=${HPV_MYSQL_OPENMRS_DATABASE}
+          - mysql_motech_database=${HPV_MYSQL_MOTECH_DATABASE}
+          - mysql_reporting_database=${HPV_MYSQL_REPORTING_DATABASE}
+          - mysql_anm_database=${HPV_MYSQL_ANM_DATABASE}
+          - redis_password=${REDIS_PASSWORD}
+          - postgres_opensrp_user=${POSTGRES_OPENSRP_USER}
+          - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
+          - postgres_opensrp_database=${HPV_POSTGRES_OPENSRP_DATABASE}
+          - demo_data_tag=${HPV_DEMO_DATA_TAG}
+          - application_suffix=${HPV_APPLICATION_SUFFIX}
+          - openmrs_version=${HPV_OPENMRS_SERVER_VERSION}
+          - openmrs_modules_version=${HPV_OPENMRS_MODULES_VERSION}          
+      depends_on:
+        - postgres
+        - mysql
+      volumes:
+        - opensrp_postgres_tablespaces:${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        - opensrp_migrations:/etc/migrations
+      environment:
+        POSTGRES_HOST: postgres
+        POSTGRES_PORT: 5432
+        POSTGRES_OPENSRP_DATABASE: ${HPV_POSTGRES_OPENSRP_DATABASE}
+        POSTGRES_OPENSRP_USER: ${POSTGRES_OPENSRP_USER}
+        POSTGRES_OPENSRP_PASSWORD: ${POSTGRES_OPENSRP_PASSWORD}
+        POSTGRES_OPENSRP_TABLESPACE_DIR: ${POSTGRES_OPENSRP_TABLESPACE_DIR}
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_MOTECH_DATABASE: ${HPV_MYSQL_MOTECH_DATABASE}
+        MYSQL_REPORTING_DATABASE: ${HPV_MYSQL_REPORTING_DATABASE}
+        MYSQL_ANM_DATABASE: ${HPV_MYSQL_ANM_DATABASE}
+        MYSQL_OPENMRS_DATABASE: ${HPV_MYSQL_OPENMRS_DATABASE}
+        MYSQL_OPENMRS_USER: ${MYSQL_OPENMRS_USER}
+        MYSQL_OPENMRS_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
+        MYSQL_OPENSRP_DATABASE: ${HPV_MYSQL_OPENSRP_DATABASE}
+        MYSQL_OPENSRP_USER: ${MYSQL_OPENSRP_USER}
+        MYSQL_OPENSRP_PASSWORD: ${MYSQL_OPENSRP_PASSWORD}
+        MYSQL_MAX_CONNECTIONS: ${MYSQL_MAX_CONNECTIONS}
+        OPENSRP_SERVER_TAG: ${HPV_OPENSRP_SERVER_TAG}
+        DEMO_DATA_TAG: ${HPV_DEMO_DATA_TAG}
+        OPENMRS_VERSION: ${HPV_OPENMRS_SERVER_VERSION}
+        OPENMRS_MODULES_VERSION: ${HPV_OPENMRS_MODULES_VERSION}           
   opensrp-composed:
     build:
       context: ../composed
@@ -99,9 +204,11 @@ services:
       - postgres
       - redis
       - zeir-setup
+      - tbreach-setup
+      - ugandahpv-setup
     ports:
-      - "9190:8080"
-      - "9191:8081"
+      - "9090:8080"
+      - "9091:8081"
     volumes:
         - opensrp_migrations:/etc/migrations
     environment:
