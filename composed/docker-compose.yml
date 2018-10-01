@@ -60,7 +60,7 @@ services:
       - postgres_opensrp_password=${POSTGRES_OPENSRP_PASSWORD}
       - postgres_opensrp_database=${POSTGRES_OPENSRP_DATABASE}
       - demo_data_tag=${DEMO_DATA_TAG}
-      - application_suffix
+      - application_suffix=${ZEIR_APPLICATION_SUFFIX}
       - openmrs_version=${OPENMRS_VERSION}
       - openmrs_modules_version=${OPENMRS_MODULES_VERSION}
     depends_on:
