@@ -2,6 +2,12 @@ FROM ubuntu:xenial
 
 MAINTAINER Ephraim Muhia (emuhia@ona.io)
 
+# RUN echo "deb [check-valid-until=no] http://cdn-fastly.deb.debian.org/debian jessie main" > /etc/apt/sources.list.d/jessie.list
+RUN echo "deb [check-valid-until=no] http://archive.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/jessie-backports.list
+RUN touch /etc/apt/sources.list
+RUN sed -i '/deb http:\/\/deb.debian.org\/debian jessie-updates main/d' /etc/apt/sources.list
+RUN echo "Acquire::Check-Valid-Until \"false\";" > /etc/apt/apt.conf.d/100disablechecks
+RUN apt-get -o Acquire::Check-Valid-Until=false update
 
 # Installing supervisord
 RUN apt-get update && apt-get install -y supervisor
