@@ -10,7 +10,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_OPENMRS_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_OPENMRS_DATABASE}
   couchdb:
-    image: "klaemo/couchdb:1.6.1"
+    image: "couchdb:2.3.0"
     volumes:
       - opensrp_couchdb:/usr/local/var/lib/couchdb
     environment:
