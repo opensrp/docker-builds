@@ -521,7 +521,7 @@ ENV POSTGRES_OPENSRP_USER $postgres_opensrp_user
 ENV POSTGRES_OPENSRP_PASSWORD $postgres_opensrp_password
 
 #Download opensrp_server
-RUN wget --quiet --no-cookies https://github.com/OpenSRP/opensrp-server/archive/${opensrp_server_tag}.tar.gz -O /tmp/${opensrp_server_tag}.tar.gz && \
+RUN wget --quiet --no-cookies https://codeload.github.com/OpenSRP/opensrp-server/tar.gz/${opensrp_server_tag} -O /tmp/${opensrp_server_tag}.tar.gz && \
 mkdir /migrate && tar -xf /tmp/${opensrp_server_tag}.tar.gz -C /tmp && cp -R /tmp/opensrp-server-${opensrp_server_tag}/assets/migrations/* /migrate 
 
 #Update property files 
