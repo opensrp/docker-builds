@@ -22,6 +22,11 @@ delimiter=;
 full_line_delimiter=false
 auto_commit=true
 changelog=changelog
+core_tablespace=pg_default
+error_tablespace=pg_default
+schedule_tablespace=pg_default
+feed_tablespace=pg_default
+form_tablespace=pg_default
 core_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/core'
 error_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/error'
 schedule_tablespace_location='$POSTGRES_OPENSRP_TABLESPACE_DIR/schedule'
@@ -54,6 +59,7 @@ fi
 #Run migrations when ignoring errors since tablespace may have been created
 /opt/mybatis-migrations-3.3.4/bin/migrate up --path=/migrate --force
 
+echo ""
 
 if [ ! -f /etc/migrations/.postgres_migrations_complete ]; then
 
