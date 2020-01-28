@@ -59,8 +59,6 @@ fi
 #Run migrations when ignoring errors since tablespace may have been created
 /opt/mybatis-migrations-3.3.4/bin/migrate up --path=/migrate --force
 
-echo ""
-
 if [ ! -f /etc/migrations/.postgres_migrations_complete ]; then
 
 	mkdir -p /etc/migrations/.running
