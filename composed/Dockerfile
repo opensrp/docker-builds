@@ -92,6 +92,8 @@ ENV PATH $PATH:$CATALINA_HOME/bin
 
 EXPOSE 8080 8081
 
+RUN mkdir -p /etc/migrations
+
 #update tomcat permissions
 RUN chown -R tomcat:tomcat /opt/tomcat
 
